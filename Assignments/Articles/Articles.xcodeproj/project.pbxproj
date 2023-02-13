@@ -47,6 +47,72 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5C77744A299AA3910064F836 /* Delegates */ = {
+			isa = PBXGroup;
+			children = (
+				5C988B102996C8C70070B04B /* AppDelegate.swift */,
+				5C988B122996C8C70070B04B /* SceneDelegate.swift */,
+			);
+			path = Delegates;
+			sourceTree = "<group>";
+		};
+		5C77744B299AA39A0064F836 /* Constants */ = {
+			isa = PBXGroup;
+			children = (
+				5C988B242996C8D40070B04B /* Constants.swift */,
+			);
+			path = Constants;
+			sourceTree = "<group>";
+		};
+		5C77744C299AA3A20064F836 /* CustomCells */ = {
+			isa = PBXGroup;
+			children = (
+				5C988B2E2996CF990070B04B /* CustomArticleTableViewCell.swift */,
+			);
+			path = CustomCells;
+			sourceTree = "<group>";
+		};
+		5C77744D299AA3AA0064F836 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				5C988B2A2996CA190070B04B /* NewsModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		5C77744E299AA3B00064F836 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				5C988B2C2996CBA40070B04B /* NewsViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		5C77744F299AA3B70064F836 /* APIHandling */ = {
+			isa = PBXGroup;
+			children = (
+				5C988B282996C9CD0070B04B /* NetworkManager.swift */,
+			);
+			path = APIHandling;
+			sourceTree = "<group>";
+		};
+		5C777450299AA3BF0064F836 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				5C988B142996C8C70070B04B /* HomeViewController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		5C777451299AA3CA0064F836 /* Storyboards */ = {
+			isa = PBXGroup;
+			children = (
+				5C988B162996C8C70070B04B /* Main.storyboard */,
+				5C988B1B2996C8C80070B04B /* LaunchScreen.storyboard */,
+			);
+			path = Storyboards;
+			sourceTree = "<group>";
+		};
 		5C988B042996C8C70070B04B = {
 			isa = PBXGroup;
 			children = (
@@ -66,17 +132,15 @@
 		5C988B0F2996C8C70070B04B /* Articles */ = {
 			isa = PBXGroup;
 			children = (
-				5C988B102996C8C70070B04B /* AppDelegate.swift */,
-				5C988B122996C8C70070B04B /* SceneDelegate.swift */,
-				5C988B242996C8D40070B04B /* Constants.swift */,
-				5C988B2E2996CF990070B04B /* CustomArticleTableViewCell.swift */,
-				5C988B2A2996CA190070B04B /* NewsModel.swift */,
-				5C988B2C2996CBA40070B04B /* NewsViewModel.swift */,
-				5C988B282996C9CD0070B04B /* NetworkManager.swift */,
-				5C988B142996C8C70070B04B /* HomeViewController.swift */,
-				5C988B162996C8C70070B04B /* Main.storyboard */,
+				5C77744A299AA3910064F836 /* Delegates */,
+				5C77744B299AA39A0064F836 /* Constants */,
+				5C77744C299AA3A20064F836 /* CustomCells */,
+				5C77744D299AA3AA0064F836 /* Models */,
+				5C77744E299AA3B00064F836 /* ViewModels */,
+				5C77744F299AA3B70064F836 /* APIHandling */,
+				5C777450299AA3BF0064F836 /* ViewControllers */,
+				5C777451299AA3CA0064F836 /* Storyboards */,
 				5C988B192996C8C80070B04B /* Assets.xcassets */,
-				5C988B1B2996C8C80070B04B /* LaunchScreen.storyboard */,
 				5C988B1E2996C8C80070B04B /* Info.plist */,
 			);
 			path = Articles;
