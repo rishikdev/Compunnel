@@ -12,7 +12,7 @@ class NetworkManager {
     static let sharedInstance = NetworkManager()
     private init() { }
     
-    func fetchPhotos(from urlString: String, completion: @escaping (Result<[GalleryModel], Error>) -> Void) {
+    func fetchPhotos<T: Decodable>(from urlString: String, completion: @escaping (Result<T, Error>) -> Void) {
         guard let url = URL(string: urlString) else { return }
         
         URLSession.shared.dataTask(with: url) { data, response, error in
@@ -23,7 +23,7 @@ class NetworkManager {
                 guard let receivedData = data else { return }
                 
                 do {
-                    let receivedModel = try JSONDecoder().decode([GalleryModel].self, from: receivedData)
+                    let receivedModel = try JSONDecoder().decode(T.self, from: receivedData)
                     completion(.success(receivedModel))
                 } catch let error {
                     completion(.failure(error))

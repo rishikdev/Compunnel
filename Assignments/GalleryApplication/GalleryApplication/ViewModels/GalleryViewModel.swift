@@ -11,7 +11,7 @@ class GalleryViewModel {
     var photos: [GalleryModel] = []
     
     func getPhotos(completion: @escaping () -> Void) {
-        NetworkManager.sharedInstance.fetchPhotos(from: Constants.urls.photos.rawValue) { [weak self] result in
+        NetworkManager.sharedInstance.fetchPhotos(from: Constants.urls.photos.rawValue) { [weak self] (result: Result<[GalleryModel], Error>) in
             switch result {
             case .success(let gallery):
                 self?.photos = gallery
