@@ -11,7 +11,7 @@ class VideoViewModel {
     var videos:[VideoModel] = []
     
     func getVideos(completion: @escaping () -> Void) {
-        NetworkManager.sharedInstance.fetchVideos(from: Constants.urls.videos.rawValue) { [weak self] result in
+        NetworkManager.sharedInstance.fetchVideos(from: Constants.urls.videos.rawValue) { [weak self] (result: Result<[VideoModel], Error>) in
             switch result {
             case .success(let videos):
                 self?.videos = videos

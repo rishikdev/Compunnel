@@ -49,6 +49,73 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5C777452299AA4950064F836 /* Storyboards */ = {
+			isa = PBXGroup;
+			children = (
+				5C988AEA2996A9FB0070B04B /* Main.storyboard */,
+				5C988AEF2996A9FC0070B04B /* LaunchScreen.storyboard */,
+			);
+			path = Storyboards;
+			sourceTree = "<group>";
+		};
+		5C777453299AA4A00064F836 /* Delegates */ = {
+			isa = PBXGroup;
+			children = (
+				5C988AE42996A9FB0070B04B /* AppDelegate.swift */,
+				5C988AE62996A9FB0070B04B /* SceneDelegate.swift */,
+			);
+			path = Delegates;
+			sourceTree = "<group>";
+		};
+		5C777454299AA4AC0064F836 /* Constants */ = {
+			isa = PBXGroup;
+			children = (
+				5C988AF82996AA070070B04B /* Constants.swift */,
+			);
+			path = Constants;
+			sourceTree = "<group>";
+		};
+		5C777455299AA4B70064F836 /* APIHandling */ = {
+			isa = PBXGroup;
+			children = (
+				5C988AFA2996AA300070B04B /* NetworkManager.swift */,
+			);
+			path = APIHandling;
+			sourceTree = "<group>";
+		};
+		5C777456299AA4CA0064F836 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				5C988AFC2996AA960070B04B /* VideoModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		5C777457299AA4CF0064F836 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				5C988AFE2996AD130070B04B /* VideoViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		5C777458299AA4DA0064F836 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				5C988AE82996A9FB0070B04B /* HomeViewController.swift */,
+				5C988B302996ED520070B04B /* TranscodingTableViewController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		5C777459299AA4E30064F836 /* CustomCells */ = {
+			isa = PBXGroup;
+			children = (
+				5C988B022996B4EE0070B04B /* CustomTranscodingTableViewCell.swift */,
+			);
+			path = CustomCells;
+			sourceTree = "<group>";
+		};
 		5C988AD82996A9FB0070B04B = {
 			isa = PBXGroup;
 			children = (
@@ -68,18 +135,15 @@
 		5C988AE32996A9FB0070B04B /* Videos */ = {
 			isa = PBXGroup;
 			children = (
-				5C988AE42996A9FB0070B04B /* AppDelegate.swift */,
-				5C988AE62996A9FB0070B04B /* SceneDelegate.swift */,
-				5C988AE82996A9FB0070B04B /* HomeViewController.swift */,
-				5C988AFA2996AA300070B04B /* NetworkManager.swift */,
-				5C988AFE2996AD130070B04B /* VideoViewModel.swift */,
-				5C988B302996ED520070B04B /* TranscodingTableViewController.swift */,
-				5C988B022996B4EE0070B04B /* CustomTranscodingTableViewCell.swift */,
-				5C988AFC2996AA960070B04B /* VideoModel.swift */,
-				5C988AF82996AA070070B04B /* Constants.swift */,
-				5C988AEA2996A9FB0070B04B /* Main.storyboard */,
+				5C777453299AA4A00064F836 /* Delegates */,
+				5C777454299AA4AC0064F836 /* Constants */,
+				5C777455299AA4B70064F836 /* APIHandling */,
+				5C777456299AA4CA0064F836 /* Models */,
+				5C777457299AA4CF0064F836 /* ViewModels */,
+				5C777458299AA4DA0064F836 /* ViewControllers */,
+				5C777459299AA4E30064F836 /* CustomCells */,
+				5C777452299AA4950064F836 /* Storyboards */,
 				5C988AED2996A9FC0070B04B /* Assets.xcassets */,
-				5C988AEF2996A9FC0070B04B /* LaunchScreen.storyboard */,
 				5C988AF22996A9FC0070B04B /* Info.plist */,
 			);
 			path = Videos;

@@ -11,7 +11,7 @@ class NetworkManager {
     static let sharedInstance = NetworkManager()
     private init() {}
     
-    func fetchVideos(from urlString: String, completion: @escaping (Result<[VideoModel], Error>) -> Void) {
+    func fetchVideos<T:Decodable>(from urlString: String, completion: @escaping (Result<T, Error>) -> Void) {
         guard let url = URL(string: urlString) else { return }
         
         URLSession.shared.dataTask(with: url) { data, response, error in
@@ -21,7 +21,7 @@ class NetworkManager {
                 guard let receivedData = data else { return }
                 
                 do {
-                    let receivedModel = try JSONDecoder().decode([VideoModel].self, from: receivedData)
+                    let receivedModel = try JSONDecoder().decode(T.self, from: receivedData)
                     completion(.success(receivedModel))
                 } catch let error {
                     completion(.failure(error))
