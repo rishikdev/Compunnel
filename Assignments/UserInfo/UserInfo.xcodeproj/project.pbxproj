@@ -45,6 +45,64 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5C77745A299AA50F0064F836 /* Delegates */ = {
+			isa = PBXGroup;
+			children = (
+				5C988ABC2996A4150070B04B /* AppDelegate.swift */,
+				5C988ABE2996A4150070B04B /* SceneDelegate.swift */,
+			);
+			path = Delegates;
+			sourceTree = "<group>";
+		};
+		5C77745B299AA51C0064F836 /* Constants */ = {
+			isa = PBXGroup;
+			children = (
+				5C988AD62996A5F80070B04B /* Constants.swift */,
+			);
+			path = Constants;
+			sourceTree = "<group>";
+		};
+		5C77745C299AA5230064F836 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				5C988AD02996A4230070B04B /* UserModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		5C77745D299AA5290064F836 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				5C988AD42996A59E0070B04B /* UserViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		5C77745E299AA53A0064F836 /* APIHandling */ = {
+			isa = PBXGroup;
+			children = (
+				5C988AD22996A47A0070B04B /* NetworkManager.swift */,
+			);
+			path = APIHandling;
+			sourceTree = "<group>";
+		};
+		5C77745F299AA5440064F836 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				5C988AC02996A4150070B04B /* ViewController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		5C777460299AA54C0064F836 /* Storyboards */ = {
+			isa = PBXGroup;
+			children = (
+				5C988AC22996A4150070B04B /* Main.storyboard */,
+				5C988AC72996A4160070B04B /* LaunchScreen.storyboard */,
+			);
+			path = Storyboards;
+			sourceTree = "<group>";
+		};
 		5C988AB02996A4150070B04B = {
 			isa = PBXGroup;
 			children = (
@@ -64,16 +122,14 @@
 		5C988ABB2996A4150070B04B /* UserInfo */ = {
 			isa = PBXGroup;
 			children = (
-				5C988ABC2996A4150070B04B /* AppDelegate.swift */,
-				5C988AD02996A4230070B04B /* UserModel.swift */,
-				5C988AD42996A59E0070B04B /* UserViewModel.swift */,
-				5C988AD62996A5F80070B04B /* Constants.swift */,
-				5C988AD22996A47A0070B04B /* NetworkManager.swift */,
-				5C988ABE2996A4150070B04B /* SceneDelegate.swift */,
-				5C988AC02996A4150070B04B /* ViewController.swift */,
-				5C988AC22996A4150070B04B /* Main.storyboard */,
+				5C77745A299AA50F0064F836 /* Delegates */,
+				5C77745B299AA51C0064F836 /* Constants */,
+				5C77745E299AA53A0064F836 /* APIHandling */,
+				5C77745C299AA5230064F836 /* Models */,
+				5C77745D299AA5290064F836 /* ViewModels */,
+				5C77745F299AA5440064F836 /* ViewControllers */,
+				5C777460299AA54C0064F836 /* Storyboards */,
 				5C988AC52996A4160070B04B /* Assets.xcassets */,
-				5C988AC72996A4160070B04B /* LaunchScreen.storyboard */,
 				5C988ACA2996A4160070B04B /* Info.plist */,
 			);
 			path = UserInfo;
