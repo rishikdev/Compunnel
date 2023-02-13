@@ -29,16 +29,6 @@ class HomeViewController: UIViewController {
     func fetchStatus() {
         newsViewModel?.getStatus {
             DispatchQueue.main.async {
-                if self.newsViewModel?.status == "ok" {
-                    self.fetchArticles()
-                }
-            }
-        }
-    }
-    
-    func fetchArticles() {
-        newsViewModel?.getArticles {
-            DispatchQueue.main.async {
                 self.tableViewArticles.reloadData()
             }
         }
@@ -59,27 +49,13 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         cell.labelAuthor.text = article?.author
         cell.labelTitle.text = article?.title
         cell.labelDescription.text = article?.description
-        cell.labelPublishedAt.text = formatDate(dateReceived: article?.publishedAt ?? "No Date")
+        cell.labelPublishedAt.text = newsViewModel?.formatDate(dateReceived: article?.publishedAt ?? "No Date")
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        200
-    }
-    
-    func formatDate(dateReceived: String) -> String {
-        let dateFormatterReceived = DateFormatter()
-        let dateFormatterOut = DateFormatter()
-        
-        dateFormatterReceived.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-        dateFormatterOut.dateFormat = "dd/MM/yyyy"
-        
-        if let date = dateFormatterReceived.date(from: dateReceived) {
-            return dateFormatterOut.string(from: date)
-        } else {
-            return "No Date"
-        }
+        250
     }
 }
 
