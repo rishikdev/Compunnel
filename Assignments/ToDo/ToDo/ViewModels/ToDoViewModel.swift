@@ -12,10 +12,11 @@ class ToDoViewModel {
     var filteredToDos: [ToDoModel] = []
     
     func getToDos(completion: @escaping () -> Void) {
-        NetworkManager.sharedInstance.fetchToDos(from: Constants.urls.toDo.rawValue) { [weak self] result in
+        NetworkManager.sharedInstance.fetchToDos(from: Constants.urls.toDo.rawValue) { [weak self] (result: Result<[ToDoModel], Error>) in
             switch result {
             case .success(let toDos):
-                self?.filteredToDos = toDos.filter { $0.completed ?? false }
+                self?.toDos = toDos
+                self?.filterToDo()
                 completion()
             case .failure(let error):
                 print("ERROR: \(error)")
@@ -25,5 +26,9 @@ class ToDoViewModel {
     
     func getToDo(at index: Int) -> ToDoModel {
         filteredToDos[index]
+    }
+    
+    func filterToDo() {
+        filteredToDos = toDos.filter { $0.completed ?? false }
     }
 }

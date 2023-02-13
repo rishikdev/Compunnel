@@ -45,6 +45,64 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5C777461299AA5B90064F836 /* Delegates */ = {
+			isa = PBXGroup;
+			children = (
+				5C988A94299696270070B04B /* AppDelegate.swift */,
+				5C988A96299696270070B04B /* SceneDelegate.swift */,
+			);
+			path = Delegates;
+			sourceTree = "<group>";
+		};
+		5C777462299AA5CC0064F836 /* Constants */ = {
+			isa = PBXGroup;
+			children = (
+				5C988AAE2996987B0070B04B /* Constants.swift */,
+			);
+			path = Constants;
+			sourceTree = "<group>";
+		};
+		5C777463299AA5D50064F836 /* APIHandling */ = {
+			isa = PBXGroup;
+			children = (
+				5C988AAA299696D00070B04B /* NetworkManager.swift */,
+			);
+			path = APIHandling;
+			sourceTree = "<group>";
+		};
+		5C777464299AA5DD0064F836 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				5C988AA82996964A0070B04B /* ToDoModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		5C777465299AA5E30064F836 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				5C988AAC299698320070B04B /* ToDoViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		5C777466299AA5E90064F836 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				5C988A98299696270070B04B /* HomeViewController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		5C777467299AA5F40064F836 /* Storyboards */ = {
+			isa = PBXGroup;
+			children = (
+				5C988A9A299696270070B04B /* Main.storyboard */,
+				5C988A9F299696290070B04B /* LaunchScreen.storyboard */,
+			);
+			path = Storyboards;
+			sourceTree = "<group>";
+		};
 		5C988A88299696270070B04B = {
 			isa = PBXGroup;
 			children = (
@@ -64,16 +122,14 @@
 		5C988A93299696270070B04B /* ToDo */ = {
 			isa = PBXGroup;
 			children = (
-				5C988A94299696270070B04B /* AppDelegate.swift */,
-				5C988A96299696270070B04B /* SceneDelegate.swift */,
-				5C988AA82996964A0070B04B /* ToDoModel.swift */,
-				5C988AAA299696D00070B04B /* NetworkManager.swift */,
-				5C988AAE2996987B0070B04B /* Constants.swift */,
-				5C988AAC299698320070B04B /* ToDoViewModel.swift */,
-				5C988A98299696270070B04B /* HomeViewController.swift */,
-				5C988A9A299696270070B04B /* Main.storyboard */,
+				5C777461299AA5B90064F836 /* Delegates */,
+				5C777462299AA5CC0064F836 /* Constants */,
+				5C777463299AA5D50064F836 /* APIHandling */,
+				5C777464299AA5DD0064F836 /* Models */,
+				5C777465299AA5E30064F836 /* ViewModels */,
+				5C777466299AA5E90064F836 /* ViewControllers */,
+				5C777467299AA5F40064F836 /* Storyboards */,
 				5C988A9D299696290070B04B /* Assets.xcassets */,
-				5C988A9F299696290070B04B /* LaunchScreen.storyboard */,
 				5C988AA2299696290070B04B /* Info.plist */,
 			);
 			path = ToDo;
