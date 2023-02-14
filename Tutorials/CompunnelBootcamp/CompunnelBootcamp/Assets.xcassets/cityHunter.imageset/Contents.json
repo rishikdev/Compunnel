@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "cityHunter.jpeg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

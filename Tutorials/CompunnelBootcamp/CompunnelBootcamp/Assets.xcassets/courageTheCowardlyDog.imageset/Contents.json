@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "courageTheCowardlyDog.jpeg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
