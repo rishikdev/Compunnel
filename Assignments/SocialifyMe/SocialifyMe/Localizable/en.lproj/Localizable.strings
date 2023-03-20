@@ -10,13 +10,13 @@
 "CFBundleDisplayName" = "SocialifyMe";
 
 // MARK: - View Controller Titles
-"signedOutHomeVCTitle" = "SocialifyMe";
-"signedOutSignUpVCTitle" = "Sign Up";
-"signedInHomeVCTitle" = "Your Feed";
-"signedInFriendsVCTitle" = "Friends";
-"signedInMessagesVCTitle" = "Messages";
-"signedInSettingsVC" = "Settings";
-"signedInCreatePostVC" = "Create Post";
+"onboardingVCTitle" = "SocialifyMe";
+"signUpVCTitle" = "Sign Up";
+"homeTabVCTitle" = "Your Feed";
+"exploreTabVCTitle" = "Explore";
+"messagesTabVCTitle" = "Messages";
+"settingsTabVC" = "Settings";
+"createPostVC" = "Create Post";
 
 // MARK: - Label Texts + Text Field Placeholders
 // The keys for both labels and text fields are the same
@@ -37,10 +37,16 @@
 "noContent" = "No Content";
 "noFriends" = "No Friends";
 "noMessages" = "No Messages";
+"labelPosts" = "Posts";
+"labelFollowers" = "Followers";
+"labelFollowing" = "Following";
+"labelYourPosts" = "Your Posts";
+"labelNoPosts" = "No Posts";
+"labelPostError" = "Something went wrong";
 
 // MARK: - Tab Bar Titles
 "homeTab" = "Home";
-"friendsTab" = "Friends";
+"friendsTab" = "Explore";
 "messagesTab" = "Messages";
 "settingsTab" = "Settings";
 

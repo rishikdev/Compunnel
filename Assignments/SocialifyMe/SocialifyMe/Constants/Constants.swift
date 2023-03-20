@@ -11,13 +11,13 @@ struct Constants {
     
     // MARK: View Controller Titles
     struct VCTitles {
-        static let signedOutHomeVCTitle = "signedOutHomeVCTitle".localized()
-        static let signedOutSignUpVCTitle = "signedOutSignUpVCTitle".localized()
-        static let signedInHomeVCTitle = "signedInHomeVCTitle".localized()
-        static let signedInFriendsVCTitle = "signedInFriendsVCTitle".localized()
-        static let signedInMessagesVCTitle = "signedInMessagesVCTitle".localized()
-        static let signedInSettingsVC = "signedInSettingsVC".localized()
-        static let signedInCreatePostVC = "signedInCreatePostVC".localized()
+        static let onboardingVCTitle = "onboardingVCTitle".localized()
+        static let signUpVCTitle = "signUpVCTitle".localized()
+        static let homeTabVCTitle = "homeTabVCTitle".localized()
+        static let exploreTabVCTitle = "exploreTabVCTitle".localized()
+        static let messagesTabVCTitle = "messagesTabVCTitle".localized()
+        static let settingsTabVC = "settingsTabVC".localized()
+        static let createPostVC = "createPostVC".localized()
     }
     
     // MARK: - Label Texts
@@ -37,6 +37,12 @@ struct Constants {
         static let noContent = "noContent".localized()
         static let noFriends = "noFriends".localized()
         static let noMessages = "noMessages".localized()
+        static let labelPosts = "labelPosts".localized()
+        static let labelFollowers = "labelFollowers".localized()
+        static let labelFollowing = "labelFollowing".localized()
+        static let labelYourPosts = "labelYourPosts".localized()
+        static let labelNoPosts = "labelNoPosts".localized()
+        static let labelPostError = "labelPostError".localized()
     }
     
     // MARK: - Text Field Placeholders
@@ -56,7 +62,7 @@ struct Constants {
     // MARK: Tab Bar Titles
     struct TabBarTitles {
         static let homeTab = "homeTab".localized()
-        static let friendsTab = "friendsTab".localized()
+        static let exploreTab = "friendsTab".localized()
         static let messagesTab = "messagesTab".localized()
         static let settingsTab = "settingsTab".localized()
     }

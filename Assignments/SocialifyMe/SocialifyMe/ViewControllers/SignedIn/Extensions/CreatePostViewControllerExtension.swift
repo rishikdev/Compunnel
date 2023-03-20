@@ -13,8 +13,10 @@ protocol CreatePostVCProtocol {
 
 extension CreatePostViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func initialConfiguration() {
-        self.labelCreatePost.text = Constants.VCTitles.signedInCreatePostVC
-        self.viewBackgroundView.layer.cornerRadius = 10
+        self.labelCreatePost.text = Constants.VCTitles.createPostVC
+        self.stackViewMain.layer.cornerRadius = 10
+        self.imageViewSelectedPhoto.isHidden = true
+        self.buttonPost.isEnabled = false
         configureTextView()
         
         self.createPostVM = CreatePostViewModel()
@@ -39,17 +41,25 @@ extension CreatePostViewController: UIImagePickerControllerDelegate, UINavigatio
     
     func selectPhotoHandler() {
         let imagePickerController = UIImagePickerController()
-        imagePickerController.allowsEditing = true
         imagePickerController.delegate = self
+        imagePickerController.allowsEditing = true
         present(imagePickerController, animated: true)
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let selectedPhoto = info[UIImagePickerController.InfoKey.editedImage] as? UIImage else { return }
+        
+        self.imageViewSelectedPhoto.isHidden = false
+        self.imageViewSelectedPhoto.image = selectedPhoto
+        self.imageViewSelectedPhoto.layer.cornerRadius = 10
+        
+        self.buttonPost.isEnabled = true
+        
         self.postPhotoURLPath = getDocumentsDirectory().appendingPathComponent("post")
         
         guard let jpegData = selectedPhoto.jpegData(compressionQuality: 0.8) else { return }
         try? jpegData.write(to: self.postPhotoURLPath!)
+        
         dismiss(animated: true)
     }
     
@@ -61,7 +71,7 @@ extension CreatePostViewController: UIImagePickerControllerDelegate, UINavigatio
     func uploadPost() {
         if let postPhotoURLPath = postPhotoURLPath {
             let activityIndicator = self.addActivityIndicator()
-            self.createPostVM.uploadPostToFirebaseStorage(user: localUser, from: postPhotoURLPath, description: textViewPostDescription.text) { [weak self] postUploadMessage, isPostUploaded in
+            self.createPostVM.uploadPostToFirebaseStorage(user: SharedUser.shared.localUser!, from: postPhotoURLPath, description: textViewPostDescription.text) { [weak self] postUploadMessage, isPostUploaded in
                 self?.removeActivityIndicator(activityIndicator: activityIndicator)
                 if(isPostUploaded) {
                     self?.presentAlert(title: Constants.Alerts.Titles.successful, message: Constants.Alerts.Messages.successfulPostUpload)

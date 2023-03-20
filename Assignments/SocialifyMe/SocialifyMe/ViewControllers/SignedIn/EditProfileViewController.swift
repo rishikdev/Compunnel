@@ -9,7 +9,19 @@ import UIKit
 import FirebaseDatabase
 import FirebaseStorage
 
-class EditDetailsViewController: UIViewController {
+class EditProfileViewController: UIViewController {
+    
+    @IBOutlet weak var labelFirstName: UILabel!
+    @IBOutlet weak var labelMiddleName: UILabel!
+    @IBOutlet weak var labelLastName: UILabel!
+    @IBOutlet weak var labelGender: UILabel!
+    @IBOutlet weak var labelEmail: UILabel!
+    @IBOutlet weak var labelPhoneNumber: UILabel!
+    @IBOutlet weak var labelAge: UILabel!
+    @IBOutlet weak var labelDateOfBirth: UILabel!
+    @IBOutlet weak var labelCity: UILabel!
+    @IBOutlet weak var labelState: UILabel!
+    @IBOutlet weak var labelCountry: UILabel!
     
     @IBOutlet weak var imageViewProfilePhoto: UIImageView!
     @IBOutlet weak var textFieldFirstName: UITextField!
@@ -19,17 +31,15 @@ class EditDetailsViewController: UIViewController {
     @IBOutlet weak var textFieldEmail: UITextField!
     @IBOutlet weak var textFieldPhoneNumber: UITextField!
     @IBOutlet weak var datePickerDateOfBirth: UIDatePicker!
-    @IBOutlet weak var labelAge: UILabel!
+    @IBOutlet weak var labelAgeValue: UILabel!
     @IBOutlet weak var textFieldCity: UITextField!
     @IBOutlet weak var textFieldState: UITextField!
     @IBOutlet weak var textFieldCountry: UITextField!
         
     var databaseRef: DatabaseReference?
     var storageRef: StorageReference?
-    var editUserDetailsVM: EditUserDetailsViewModel?
+    var editProfileVM: EditProfileViewModel?
     
-    var localUser: LocalUser!
-    var sharedUser: SharedUser!
     var dateOfBirth: Date?
     var selectedGender: Constants.Genders!
     var genderMenu: UIMenu!
@@ -41,7 +51,7 @@ class EditDetailsViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        
+        self.hideKeyboardWhenTappedAround()
         initialConfiguration()
     }
     
@@ -51,6 +61,6 @@ class EditDetailsViewController: UIViewController {
     
     @IBAction func dateOfBirthAction(_ sender: UIDatePicker) {
         dateOfBirth = datePickerDateOfBirth.date
-        labelAge.text = "\(ValidateData.shared.isValidDateOfBirth(value: dateOfBirth ?? Date()).1 ?? 0)"
+        labelAgeValue.text = "\(ValidateData.shared.isValidDateOfBirth(value: dateOfBirth ?? Date()).1 ?? 0)"
     }
 }

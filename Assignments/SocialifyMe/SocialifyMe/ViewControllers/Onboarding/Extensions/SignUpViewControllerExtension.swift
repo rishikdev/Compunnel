@@ -11,17 +11,17 @@ import FirebaseDatabase
 extension SignUpViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     func initialConfiguration() {
-        title = Constants.VCTitles.signedOutSignUpVCTitle
+        title = Constants.VCTitles.signUpVCTitle
         configureProfilePhoto()
         setDatePicker()
         configureButtonSelectGender()
         populateLabelsAndTextFieldPlaceholders()
-        self.editUserDetailsVM = EditUserDetailsViewModel()
+        self.editProfileVM = EditProfileViewModel()
     }
     
     func populateLabelsAndTextFieldPlaceholders() {
         labelFirstName.text = Constants.LabelTexts.firstName
-        labelMiddle.text = Constants.LabelTexts.middleName
+        labelMiddleName.text = Constants.LabelTexts.middleName
         labelLastName.text = Constants.LabelTexts.lastName
         labelGender.text = Constants.LabelTexts.gender
         labelEmail.text = Constants.TextFieldPlaceholders.email
@@ -46,7 +46,7 @@ extension SignUpViewController: UIImagePickerControllerDelegate, UINavigationCon
     }
     
     func configureNonFederatedSignUp() {
-         if(localUser == nil) {
+         if(sharedLocalUser == nil) {
             self.stackViewEmailPassword.isHidden = false
 
              buttonSignUp.configuration?.title = Constants.Buttons.signUp
@@ -63,7 +63,7 @@ extension SignUpViewController: UIImagePickerControllerDelegate, UINavigationCon
     }
     
     func configureFederatedSignUp() {
-        if let user = localUser {
+        if let user = sharedLocalUser {
             self.stackViewEmailPassword.isHidden = true
             
             buttonSignUp.configuration?.title = Constants.Buttons.updateProfile
@@ -210,26 +210,26 @@ extension SignUpViewController: UIImagePickerControllerDelegate, UINavigationCon
                                   country: country)
         
         /// Signing up with Google or Facebook
-        if let localUser = localUser,
+        if let localUser = sharedLocalUser,
            let uid = localUser.uid {
             userModel.uid = uid
             
             if !didUserCancelProfilePhotoSelection,
                let profilePhotoURLPath = profilePhotoURLPath {
-                self.editUserDetailsVM?.uploadProfilePhoto(uid: uid, from: profilePhotoURLPath) { [weak self] uploadProfilePhotoMessage, downloadURL, isProfilePhotoUploaded in
+                self.editProfileVM?.uploadProfilePhoto(uid: uid, from: profilePhotoURLPath) { [weak self] uploadProfilePhotoMessage, downloadURL, isProfilePhotoUploaded in
                     if(isProfilePhotoUploaded) {
                         userModel.profilePhotoFirebaseStorageURL = downloadURL
-                        self?.editUserDetailsVM?.updateUserProfileInFirebaseDatabase(userModel: userModel) { [weak self] updateProfileMessage, isProfileUpdated, updatedUserModel in
+                        self?.editProfileVM?.updateUserProfileInFirebaseDatabase(userModel: userModel) { [weak self] updateProfileMessage, isProfileUpdated, updatedUserModel in
                             if(isProfileUpdated) {
                                 /// Profile was successfully updated
-                                self?.editUserDetailsVM?.downloadProfilePhoto(uid: uid) { [weak self] downloadedProfilePhotoURL, isProfilePhotoDownloaded in
+                                self?.editProfileVM?.downloadProfilePhoto(uid: uid) { [weak self] downloadedProfilePhotoURL, isProfilePhotoDownloaded in
                                     if(isProfilePhotoDownloaded) {
                                         /// Profile photo was successfully uploaded and downloaded to local storage
-                                        self?.editUserDetailsVM?.updateUserProfileInLocalStorage(localUser: localUser, updatedUserModel: updatedUserModel, profilePhotoURL: downloadedProfilePhotoURL)
+                                        self?.editProfileVM?.updateUserProfileInLocalStorage(localUser: localUser, updatedUserModel: updatedUserModel, profilePhotoURL: downloadedProfilePhotoURL)
                                         completion(updateProfileMessage, true)
                                     } else {
                                         /// Profile photo was successfully uploaded, but could not be downloaded to local storage
-                                        self?.editUserDetailsVM?.updateUserProfileInLocalStorage(localUser: localUser, updatedUserModel: updatedUserModel, profilePhotoURL: nil)
+                                        self?.editProfileVM?.updateUserProfileInLocalStorage(localUser: localUser, updatedUserModel: updatedUserModel, profilePhotoURL: nil)
                                         completion(Constants.Alerts.Messages.successfulProfileUpdationUnsuccessfulProfilePhotoUpload, true)
                                     }
                                 }
@@ -245,10 +245,10 @@ extension SignUpViewController: UIImagePickerControllerDelegate, UINavigationCon
                 }
             } else {
                 /// User did not choose a profile photo or there was something wrong with the selected profile photo
-                self.editUserDetailsVM?.updateUserProfileInFirebaseDatabase(userModel: userModel) { [weak self] updateProfileMessage, isProfileUpdated, updatedUserModel in
+                self.editProfileVM?.updateUserProfileInFirebaseDatabase(userModel: userModel) { [weak self] updateProfileMessage, isProfileUpdated, updatedUserModel in
                     if(isProfileUpdated) {
                         /// Profile was successfully updated
-                        self?.editUserDetailsVM?.updateUserProfileInLocalStorage(localUser: localUser, updatedUserModel: updatedUserModel, profilePhotoURL: nil)
+                        self?.editProfileVM?.updateUserProfileInLocalStorage(localUser: localUser, updatedUserModel: updatedUserModel, profilePhotoURL: nil)
                         completion(updateProfileMessage, true)
                     } else {
                         /// Profile could not be updated
@@ -262,49 +262,49 @@ extension SignUpViewController: UIImagePickerControllerDelegate, UINavigationCon
             ///
             /// First create an account, then create a profile using details obtained from the created account. Also create a local account for the user.
             ///
-            editUserDetailsVM?.createAccount(email: email, password: password) { [weak self] createAccountMessage, isAccountCreated, user in
+            editProfileVM?.createAccount(email: email, password: password) { [weak self] createAccountMessage, isAccountCreated, user in
                 if(isAccountCreated),
                   let uid = user?.uid {
                     userModel.uid = uid
                     
                     if !self!.didUserCancelProfilePhotoSelection,
                        let profilePhotoURLPath = self?.profilePhotoURLPath {
-                        self?.editUserDetailsVM?.uploadProfilePhoto(uid: uid, from: profilePhotoURLPath) { [weak self] uploadProfilePhotoMessage, downloadURL, isProfilePhotoUploaded in
+                        self?.editProfileVM?.uploadProfilePhoto(uid: uid, from: profilePhotoURLPath) { [weak self] uploadProfilePhotoMessage, downloadURL, isProfilePhotoUploaded in
                             if(isProfilePhotoUploaded) {
                                 userModel.profilePhotoFirebaseStorageURL = downloadURL
-                                self?.editUserDetailsVM?.createUserProfileInFirebaseDatabase(userModel: userModel) { [weak self] createProfileMessage , isProfileCreated in
+                                self?.editProfileVM?.createUserProfileInFirebaseDatabase(userModel: userModel) { [weak self] createProfileMessage , isProfileCreated in
                                     if(isProfileCreated) {
-                                        self?.editUserDetailsVM?.downloadProfilePhoto(uid: uid) { [weak self] downloadedProfilePhotoURL, isProfilePhotoDownloaded in
+                                        self?.editProfileVM?.downloadProfilePhoto(uid: uid) { [weak self] downloadedProfilePhotoURL, isProfilePhotoDownloaded in
                                             if(isProfilePhotoDownloaded) {
                                                 /// Profile photo was successfully uploaded and downloaded to local storage
-                                                self?.editUserDetailsVM?.createUserProfileInLocalStorage(userModel: userModel, profilePhotoURL: downloadedProfilePhotoURL)
+                                                self?.editProfileVM?.createUserProfileInLocalStorage(userModel: userModel, profilePhotoURL: downloadedProfilePhotoURL)
                                                 completion(createProfileMessage, true)
                                             } else {
                                                 /// Profile photo was successfully uploaded, but could not be downloaded to local storage
-                                                self?.editUserDetailsVM?.createUserProfileInLocalStorage(userModel: userModel, profilePhotoURL: nil)
+                                                self?.editProfileVM?.createUserProfileInLocalStorage(userModel: userModel, profilePhotoURL: nil)
                                                 completion(Constants.Alerts.Messages.successfulProfileCreationUnsuccessfulProfilePhotoUpload, true)
                                             }
                                         }
                                     } else {
                                         /// Profile could not be created
-                                        self?.editUserDetailsVM?.createUserProfileInLocalStorage(userModel: userModel, profilePhotoURL: nil)
+                                        self?.editProfileVM?.createUserProfileInLocalStorage(userModel: userModel, profilePhotoURL: nil)
                                         completion(Constants.Alerts.Messages.successfulSignUpUnsuccessfulProfileCreation, true)
                                     }
                                 }
                             } else {
                                 /// Profile photo could not be uploaded
-                                self?.editUserDetailsVM?.createUserProfileInLocalStorage(userModel: userModel, profilePhotoURL: nil)
+                                self?.editProfileVM?.createUserProfileInLocalStorage(userModel: userModel, profilePhotoURL: nil)
                                 completion(Constants.Alerts.Messages.successfulSignUpUnsuccessfulProfileCreation, true)
                             }
                         }
                     } else {
                         /// User did not choose a profile photo or there was something wrong with the selected profile photo
-                        self?.editUserDetailsVM?.createUserProfileInFirebaseDatabase(userModel: userModel) { [weak self] createProfileMessage, isProfileCreated in
+                        self?.editProfileVM?.createUserProfileInFirebaseDatabase(userModel: userModel) { [weak self] createProfileMessage, isProfileCreated in
                             if(isProfileCreated) {
-                                self?.editUserDetailsVM?.createUserProfileInLocalStorage(userModel: userModel, profilePhotoURL: nil)
+                                self?.editProfileVM?.createUserProfileInLocalStorage(userModel: userModel, profilePhotoURL: nil)
                                 completion(createProfileMessage, true)
                             } else {
-                                self?.editUserDetailsVM?.createUserProfileInLocalStorage(userModel: userModel, profilePhotoURL: nil)
+                                self?.editProfileVM?.createUserProfileInLocalStorage(userModel: userModel, profilePhotoURL: nil)
                                 completion(Constants.Alerts.Messages.successfulSignUpUnsuccessfulProfileCreation, true)
                             }
                         }
@@ -323,14 +323,13 @@ extension SignUpViewController: UIImagePickerControllerDelegate, UINavigationCon
             guard let signedInTabBarController = UIStoryboard(name: "SignedIn", bundle: nil).instantiateViewController(withIdentifier: "SignedInTabBarController") as? SignedInTabBarController else { return }
             signedInTabBarController.databaseRef = self?.databaseRef
             signedInTabBarController.storageRef = self?.storageRef
-            signedInTabBarController.localUser = self?.localUser
             
             DispatchQueue.main.async {
                 self?.removeActivityIndicator(activityIndicator: activityIndicator)
                 
                 if(isRegistrationSuccessful) {
                     /// This indicates that the user created his/her account using a provider such as Google or Facebook
-                    if(self?.localUser != nil) {
+                    if(self?.sharedLocalUser != nil) {
                         self?.presentAlertAndSwitchVC(title: Constants.Alerts.Titles.successful, message: message, switchTo: signedInTabBarController)
                     } else {
                         self?.presentAlert(title: Constants.Alerts.Titles.successful, message: message, navigateBack: true)

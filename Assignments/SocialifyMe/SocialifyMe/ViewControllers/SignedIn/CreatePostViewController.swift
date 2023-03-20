@@ -9,16 +9,15 @@ import UIKit
 
 class CreatePostViewController: UIViewController {
 
-    
     @IBOutlet weak var buttonCancel: UIButton!
     @IBOutlet weak var labelCreatePost: UILabel!
-    @IBOutlet weak var viewBackgroundView: UIView!
+    @IBOutlet weak var stackViewMain: UIStackView!
     @IBOutlet weak var textViewPostDescription: UITextView!
     @IBOutlet weak var buttonSelectPhoto: UIButton!
     @IBOutlet weak var buttonPost: UIButton!
+    @IBOutlet weak var imageViewSelectedPhoto: UIImageView!
     
     var createPostVM: CreatePostViewModel!
-    var localUser: LocalUser!
     var postPhotoURLPath: URL?
     var delegate: CreatePostVCProtocol?
     
@@ -26,6 +25,7 @@ class CreatePostViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        self.hideKeyboardWhenTappedAround()
         initialConfiguration()
     }
     

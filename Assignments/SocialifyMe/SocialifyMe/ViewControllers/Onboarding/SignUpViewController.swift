@@ -13,7 +13,7 @@ class SignUpViewController: UIViewController {
     
     @IBOutlet weak var imageViewProfilePhoto: UIImageView!
     @IBOutlet weak var labelFirstName: UILabel!
-    @IBOutlet weak var labelMiddle: UILabel!
+    @IBOutlet weak var labelMiddleName: UILabel!
     @IBOutlet weak var labelLastName: UILabel!
     @IBOutlet weak var labelGender: UILabel!
     @IBOutlet weak var labelEmail: UILabel!
@@ -43,11 +43,11 @@ class SignUpViewController: UIViewController {
     
     var databaseRef: DatabaseReference?
     var storageRef: StorageReference?
-    var editUserDetailsVM: EditUserDetailsViewModel?
+    var editProfileVM: EditProfileViewModel?
     var dateOfBirth: Date?
     var genderMenu: UIMenu!
     var selectedGender: Constants.Genders!
-    var localUser: LocalUser?
+    var sharedLocalUser: LocalUser?
     var email: String?
     var password: String?
     
@@ -58,14 +58,14 @@ class SignUpViewController: UIViewController {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
-        
+        self.hideKeyboardWhenTappedAround()
         initialConfiguration()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if(localUser != nil) {
+        if(sharedLocalUser != nil) {
             configureFederatedSignUp()
         } else {
             configureNonFederatedSignUp()

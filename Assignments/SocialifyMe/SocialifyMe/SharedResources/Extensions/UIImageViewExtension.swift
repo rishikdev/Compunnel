@@ -32,9 +32,8 @@ extension UIImageView {
             self.image = image
             return
         }
-        guard let url = URL(string: urlString) else {
-            return
-        }
+        guard let url = URL(string: urlString) else { return }
+        
         DispatchQueue.global().async {[weak self] in
             guard let data = try? Data(contentsOf: url) else { return }
 

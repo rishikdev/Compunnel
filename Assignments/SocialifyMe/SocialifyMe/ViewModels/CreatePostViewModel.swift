@@ -31,6 +31,6 @@ class CreatePostViewModel {
     ///   - completion: An escaping closure with two arguments.
     ///
     func uploadPostToFirebaseStorage(user: LocalUser, from urlPath: URL, description: String?, completion: @escaping (String, Bool) -> Void) {
-        FirebaseManager.shared.uploadPostToFirebaseStorage(user: user, from: urlPath, postDescription: description) { postUploadMessage, isPostUploaded in completion(postUploadMessage, isPostUploaded) }
+        FirebaseStorageManager.shared.uploadPostToFirebaseStorage(user: user, from: urlPath, postDescription: description) { postUploadMessage, isPostUploaded in completion(postUploadMessage, isPostUploaded) }
     }
 }

@@ -11,7 +11,7 @@ import FacebookLogin
 import FirebaseDatabase
 import FirebaseStorage
 
-class SignedOutHomeViewController: UIViewController {
+class OnboardingViewController: UIViewController {
 
     @IBOutlet weak var imageViewLogo: UIImageView!
     @IBOutlet weak var labelEmail: UILabel!
@@ -27,10 +27,13 @@ class SignedOutHomeViewController: UIViewController {
     var facebookLoginManager: LoginManager!
     var databaseRef: DatabaseReference!
     var storageRef: StorageReference!
-    var signedOutHomeVM: SignedOutHomeViewModel?
+    var onboardingVM: OnboardingViewModel?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Do any additional setup after loading the view.
+        self.hideKeyboardWhenTappedAround()
         initialConfiguration()
     }
     

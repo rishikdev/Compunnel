@@ -13,12 +13,12 @@ import FirebaseCrashlytics
 import FacebookLogin
 import GoogleSignIn
 
-extension SignedOutHomeViewController {
+extension OnboardingViewController {
     
     func initialConfiguration() {
-        title = Constants.VCTitles.signedOutHomeVCTitle
+        title = Constants.VCTitles.onboardingVCTitle
         
-        self.signedOutHomeVM = SignedOutHomeViewModel()
+        self.onboardingVM = OnboardingViewModel()
         populateLabelsAndTextFieldPlaceholders()
                 
         configureButton(button: buttonSignIn, buttonTitle: Constants.Buttons.signIn, buttonColour: .systemGreen)
@@ -97,7 +97,7 @@ extension SignedOutHomeViewController {
         guard let signUpVC = storyboard?.instantiateViewController(withIdentifier: "SignUpViewController") as? SignUpViewController else { return }
         
         signUpVC.databaseRef = databaseRef
-        signUpVC.localUser = localUser
+        signUpVC.sharedLocalUser = localUser
         signUpVC.email = textFieldEmail.text
         signUpVC.password = textFieldPassword.text
         
@@ -117,9 +117,9 @@ extension SignedOutHomeViewController {
             signedInTabBarController.databaseRef = databaseRef
             signedInTabBarController.storageRef = storageRef
             
-            signedOutHomeVM?.signInWithEmailPassword(email: email, password: password) { [weak self] message, isSignInSuccessful, localUser in
+            onboardingVM?.signInWithEmailPassword(email: email, password: password) { [weak self] message, isSignInSuccessful in
                 self?.removeActivityIndicator(activityIndicator: activityIndicator)
-                signedInTabBarController.localUser = localUser
+//                signedInTabBarController.localUser = localUser
                 
                 if(isSignInSuccessful) {
                     DispatchQueue.main.async {
@@ -147,14 +147,15 @@ extension SignedOutHomeViewController {
     func signInWithGoogle() {
         let activityIndicator = addActivityIndicator()
         
-        signedOutHomeVM?.signInWithGoogle(currentVewController: self) { [weak self] message, isSignInSuccessful, localUser, isNewUser in
+        onboardingVM?.signInWithGoogle(currentVewController: self) { [weak self] message, isSignInSuccessful, isNewUser in
             self?.removeActivityIndicator(activityIndicator: activityIndicator)
             
             if(isSignInSuccessful) {
                 guard let signedInTabBarController = UIStoryboard(name: "SignedIn", bundle: nil).instantiateViewController(withIdentifier: "SignedInTabBarController") as? SignedInTabBarController else { return }
                 signedInTabBarController.databaseRef = self?.databaseRef
                 signedInTabBarController.storageRef = self?.storageRef
-                signedInTabBarController.localUser = localUser
+                
+                let localUser = SharedUser.shared.localUser
                 
                 if(isNewUser) {
                     let userModel = UserModel(uid: (localUser?.uid)!,
@@ -164,9 +165,9 @@ extension SignedOutHomeViewController {
                                               lastName: localUser?.lastName,
                                               email: (localUser?.email)!)
                     
-                    self?.signedOutHomeVM?.createUserProfileInFirebaseDatabase(userModel: userModel) { [weak self] createProfileMessage, isProfileCreated in
+                    self?.onboardingVM?.createUserProfileInFirebaseDatabase(userModel: userModel) { [weak self] createProfileMessage, isProfileCreated in
                         if(isProfileCreated) {
-                            self?.presentAlertAndSwitchVC(title: Constants.Alerts.Titles.successful, message: Constants.Alerts.Messages.completeProfileUponSuccessfulSignUpUsingProvider, localUser: localUser!, switchTo: signedInTabBarController)
+                            self?.presentAlertAndSwitchVC(title: Constants.Alerts.Titles.successful, message: Constants.Alerts.Messages.completeProfileUponSuccessfulSignUpUsingProvider, sharedLocalUser: localUser!, switchTo: signedInTabBarController)
                         } else {
                             self?.presentAlert(title: Constants.Alerts.Titles.unsuccessful, message: createProfileMessage)
                         }
@@ -195,26 +196,27 @@ extension SignedOutHomeViewController {
     func signInWithFacebook() {
         let activityIndicator = addActivityIndicator()
         
-        signedOutHomeVM?.signInWithFacebook(currentViewController: self) { [weak self] message, isSignInSuccessful, localUser, isNewUser in
+        onboardingVM?.signInWithFacebook(currentViewController: self) { [weak self] message, isSignInSuccessful, isNewUser in
             self?.removeActivityIndicator(activityIndicator: activityIndicator)
             
             if(isSignInSuccessful) {
                 guard let signedInTabBarController = UIStoryboard(name: "SignedIn", bundle: nil).instantiateViewController(withIdentifier: "SignedInTabBarController") as? SignedInTabBarController else { return }
                 signedInTabBarController.databaseRef = self?.databaseRef
                 signedInTabBarController.storageRef = self?.storageRef
-                signedInTabBarController.localUser = localUser
+                
+                let sharedUser = SharedUser.shared.localUser
                 
                 if(isNewUser) {
-                    let userModel = UserModel(uid: (localUser?.uid)!,
-                                              providerName: (localUser?.providerName)!,
-                                              firstName: localUser?.firstName,
-                                              middleName: localUser?.middleName,
-                                              lastName: localUser?.lastName,
-                                              email: (localUser?.email)!)
+                    let userModel = UserModel(uid: (sharedUser?.uid)!,
+                                              providerName: (sharedUser?.providerName)!,
+                                              firstName: sharedUser?.firstName,
+                                              middleName: sharedUser?.middleName,
+                                              lastName: sharedUser?.lastName,
+                                              email: (sharedUser?.email)!)
                     
-                    self?.signedOutHomeVM?.createUserProfileInFirebaseDatabase(userModel: userModel) { [weak self] createProfileMessage, isProfileCreated in
+                    self?.onboardingVM?.createUserProfileInFirebaseDatabase(userModel: userModel) { [weak self] createProfileMessage, isProfileCreated in
                         if(isProfileCreated) {
-                            self?.presentAlertAndSwitchVC(title: Constants.Alerts.Titles.successful, message: Constants.Alerts.Messages.completeProfileUponSuccessfulSignUpUsingProvider, localUser: localUser!, switchTo: signedInTabBarController)
+                            self?.presentAlertAndSwitchVC(title: Constants.Alerts.Titles.successful, message: Constants.Alerts.Messages.completeProfileUponSuccessfulSignUpUsingProvider, sharedLocalUser: sharedUser!, switchTo: signedInTabBarController)
                         } else {
                             self?.presentAlert(title: Constants.Alerts.Titles.unsuccessful, message: createProfileMessage)
                         }
@@ -249,10 +251,10 @@ extension SignedOutHomeViewController {
     
     /// Presents some information pertinent to the user's actions and also prompts the user to create a profile.
     ///
-    func presentAlertAndSwitchVC(title: String, message: String, localUser: LocalUser, switchTo viewController: UIViewController) {
+    func presentAlertAndSwitchVC(title: String, message: String, sharedLocalUser: LocalUser, switchTo viewController: UIViewController) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: Constants.Buttons.yesSure, style: .default) { _ in
-            self.detailedSignUp(localUser: localUser)
+            self.detailedSignUp(localUser: sharedLocalUser)
         })
         alertController.addAction(UIAlertAction(title: Constants.Buttons.noMaybeLater, style: .cancel) { _ in
             self.switchRootViewController(to: viewController)

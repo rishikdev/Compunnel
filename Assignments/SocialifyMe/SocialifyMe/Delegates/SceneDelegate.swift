@@ -72,19 +72,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let localUsers = CoreDataManager.shared.fetchLocalUsers()
         
         if(localUsers.count > 0) {
+            SharedUser.shared.localUser = localUsers[0]
+            
             // Local profile of a user exists. Use this profile to swift root view controller to SignedInTabBarController
             guard let signedInTabBarController = signedInStoryboard.instantiateViewController(withIdentifier: "SignedInTabBarController") as? SignedInTabBarController else { return }
-            let localUser = localUsers[0]
-            let sharedUser = HelperFunctions.shared.getSharedUser(localUser: localUser)
+            
             signedInTabBarController.databaseRef = databaseRef
             signedInTabBarController.storageRef = storageRef
-            signedInTabBarController.localUser = localUser
-            signedInTabBarController.sharedUser = sharedUser
             
             window?.rootViewController = signedInTabBarController
         } else {
             guard let signedOutHomeNavigationController = mainStoryboard.instantiateViewController(withIdentifier: "SignedOutHomeNavigationController") as? UINavigationController else { return }
-            guard let signedOutHomeVC = signedOutHomeNavigationController.topViewController as? SignedOutHomeViewController else { return }
+            guard let signedOutHomeVC = signedOutHomeNavigationController.topViewController as? OnboardingViewController else { return }
+            
             signedOutHomeVC.facebookLoginManager = facebookLoginManager
             signedOutHomeVC.databaseRef = databaseRef
             signedOutHomeVC.storageRef = storageRef

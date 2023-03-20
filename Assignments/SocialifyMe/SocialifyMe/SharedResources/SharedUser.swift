@@ -7,20 +7,11 @@
 
 import Foundation
 
-struct SharedUser {
+class SharedUser {
+    static let shared = SharedUser()
+    var localUser: LocalUser?
     
-    var uid: String
-    var providerName: String?
-    var firstName: String?
-    var middleName: String?
-    var lastName: String?
-    var age: Int?
-    var gender: String?
-    var email: String
-    var phoneNumber: String?
-    var dateOfBirth: Date?
-    var city: String?
-    var state: String?
-    var country: String?
-    var profilePhotoFirebaseStorageURL: String?
+    private init(localUser: LocalUser? = nil) {
+        self.localUser = localUser
+    }
 }

@@ -7,19 +7,19 @@
 
 import UIKit
 
-extension SignedInHomeViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate, CreatePostVCProtocol {
+extension HomeTabViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate, CreatePostVCProtocol {
     func reloadHomeVC() {
         fetchPosts()
     }
     
     func initialConfiguration() {
-        self.navigationItem.title =  Constants.VCTitles.signedInHomeVCTitle
-        self.signedInHomeVM = SignedInHomeViewModel()
+        self.navigationItem.title =  Constants.VCTitles.homeTabVCTitle
+        self.homeTabVM = HomeTabViewModel()
+        
         self.labelNoContent.text = Constants.LabelTexts.noContent
         self.labelNoContent.isHidden = true
        
         addUploadPostButton()
-        fetchPosts()
     }
     
     private func addUploadPostButton() {
@@ -28,24 +28,19 @@ extension SignedInHomeViewController: UIImagePickerControllerDelegate, UINavigat
     
     @objc private func uploadPostButtonHandler() {
         guard let createPostVC = storyboard?.instantiateViewController(withIdentifier: "CreatePostViewController") as? CreatePostViewController else { return }
-        createPostVC.localUser = self.localUser
+        
         createPostVC.delegate = self
+        
         navigationController?.present(createPostVC, animated: true)
     }
     
-    private func fetchPosts() {
+    func fetchPosts() {
         let activityIndicator = self.addActivityIndicator()
-        self.signedInHomeVM.fetchPostsMetadata() { [weak self] fetchPostMessage, postModelArray, arePostsFetched in
+        self.homeTabVM.fetchPostsMetadata() { [weak self] fetchPostMessage, arePostsFetched in
             self?.removeActivityIndicator(activityIndicator: activityIndicator)
             if(arePostsFetched) {
                 /// There is at least one post in the database.
-                if(!postModelArray!.isEmpty) {
-                    self?.posts = postModelArray
-                    self?.posts?.sort { p1, p2 in
-                        let dateFormatter = DateFormatter()
-                        dateFormatter.dateFormat = "E, dd MMM yyyy HH:mm"
-                        return dateFormatter.date(from: p1.postTimeCreated!)! > dateFormatter.date(from: p2.postTimeCreated!)!
-                    }
+                if(!self!.homeTabVM.posts.isEmpty) {
                     self?.displayPosts()
                 } else {
                     /// There are no posts in the database.
@@ -84,34 +79,32 @@ extension SignedInHomeViewController: UIImagePickerControllerDelegate, UINavigat
         stackView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor)
         ])
         
-        if let posts = self.posts {
-            for post in posts {
-                let postView = PostView()
-                
-                if(post.userProfilePhotoFirebaseStorageURL!.isEmpty) {
-                    postView.imageViewProfilePhoto.load(Constants.DefaultURLs.noProfilePhoto)
-                } else {
-                    postView.imageViewProfilePhoto.load(post.userProfilePhotoFirebaseStorageURL!)
-                }
-                postView.imageViewProfilePhoto.roundImage()
-                
-                postView.labelUserName.text = post.userName
-                postView.labelTimeCreated.text = post.postTimeCreated
-                
-                postView.imageViewPostPhoto.load(post.postPhotoStorageURL ?? Constants.DefaultURLs.noPostPhoto)
-                postView.imageViewPostPhoto.layer.cornerRadius = 10
-                
-                if(post.postDescription?.trimmingCharacters(in: .whitespaces) != "") {
-                    postView.labelUserNameDescription.text = post.userName
-                    postView.labelPostDescription.text = post.postDescription
-                } else {
-                    postView.stackViewDescription.isHidden = true
-                }
-                
-                stackView.addArrangedSubview(postView)
-                postView.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
-                postView.heightAnchor.constraint(greaterThanOrEqualToConstant: 525).isActive = true
+        for post in self.homeTabVM.posts {
+            let postView = PostView()
+            
+            if(post.userProfilePhotoFirebaseStorageURL!.isEmpty) {
+                postView.imageViewProfilePhoto.load(Constants.DefaultURLs.noProfilePhoto)
+            } else {
+                postView.imageViewProfilePhoto.load(post.userProfilePhotoFirebaseStorageURL!)
             }
+            postView.imageViewProfilePhoto.roundImage()
+            
+            postView.labelUserName.text = post.userName
+            postView.labelTimeCreated.text = HelperFunctions.shared.GMTDateTimeToLocal(dateString: post.postTimeCreated!)
+            
+            postView.imageViewPostPhoto.load(post.postPhotoStorageURL ?? Constants.DefaultURLs.noPostPhoto)
+            postView.imageViewPostPhoto.layer.cornerRadius = 10
+            
+            if(post.postDescription?.trimmingCharacters(in: .whitespaces) != "") {
+                postView.labelUserNameDescription.text = post.userName
+                postView.labelPostDescription.text = post.postDescription
+            } else {
+                postView.stackViewDescription.isHidden = true
+            }
+            
+            stackView.addArrangedSubview(postView)
+            postView.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
+            postView.heightAnchor.constraint(greaterThanOrEqualToConstant: 525).isActive = true
         }
     }
     

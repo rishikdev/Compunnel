@@ -26,14 +26,14 @@ class ShowDetailsViewController: UIViewController {
     @IBOutlet weak var stackViewEmailPhone: UIStackView!
     @IBOutlet weak var stackViewLocation: UIStackView!
     
-    var userViewModel: EditUserDetailsViewModel?
+    var editProfileVM: EditProfileViewModel?
     var user: LocalUser?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         title = "Details"
-
+        self.hideKeyboardWhenTappedAround()
         addEditButton()
         
         // Do any additional setup after loading the view.
@@ -76,10 +76,9 @@ class ShowDetailsViewController: UIViewController {
     
     @objc func buttonEditAction() {
         
-        guard let editDetailsVC = storyboard?.instantiateViewController(withIdentifier: "EditDetailsViewController") as? EditDetailsViewController else { return }
+        guard let editDetailsVC = storyboard?.instantiateViewController(withIdentifier: "EditDetailsViewController") as? EditProfileViewController else { return }
         
-        editDetailsVC.editUserDetailsVM = userViewModel
-        editDetailsVC.localUser = user
+        editDetailsVC.editProfileVM = editProfileVM
         editDetailsVC.dateOfBirth = user?.dateOfBirth
         
         navigationController?.pushViewController(editDetailsVC, animated: true)

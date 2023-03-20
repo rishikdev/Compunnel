@@ -11,6 +11,8 @@ class HelperFunctions {
     static let shared = HelperFunctions()
     private init() {}
     
+    private let dateFormatter = DateFormatter()
+    
     func getUserDictionary(userModel: UserModel) -> [String: Any] {
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
@@ -35,42 +37,24 @@ class HelperFunctions {
         return userDictionary
     }
     
-    func getSharedUser(localUser: LocalUser? = nil, userModel: UserModel? = nil) -> SharedUser {
-        var sharedUser = SharedUser(uid: "", email: "")
-        if let user = localUser {
-            sharedUser.uid = user.uid!
-            sharedUser.providerName = user.providerName!
-            sharedUser.firstName = user.firstName!
-            sharedUser.middleName = user.middleName
-            sharedUser.lastName = user.lastName
-            sharedUser.age = Int(user.age)
-            sharedUser.gender = user.gender
-            sharedUser.email = user.email!
-            sharedUser.phoneNumber = user.phoneNumber
-            sharedUser.dateOfBirth = user.dateOfBirth
-            sharedUser.city = user.city
-            sharedUser.state = user.state
-            sharedUser.country = user.country
-            sharedUser.profilePhotoFirebaseStorageURL = user.profilePhotoFirebaseStorageURL
-        }
+    func localDateTimeToGMT() -> String {
+        dateFormatter.dateFormat = "dd/MM/yyyy HH:mm"
+        dateFormatter.locale = Locale(identifier: "en")
+        dateFormatter.timeZone = .gmt
         
-        if let user = userModel {
-            sharedUser.uid = user.uid
-            sharedUser.providerName = user.providerName!
-            sharedUser.firstName = user.firstName!
-            sharedUser.middleName = user.middleName
-            sharedUser.lastName = user.lastName
-            sharedUser.age = Int(user.age ?? 0)
-            sharedUser.gender = user.gender
-            sharedUser.email = user.email
-            sharedUser.phoneNumber = user.phoneNumber
-            sharedUser.dateOfBirth = user.dateOfBirth
-            sharedUser.city = user.city
-            sharedUser.state = user.state
-            sharedUser.country = user.country
-            sharedUser.profilePhotoFirebaseStorageURL = user.profilePhotoFirebaseStorageURL
-        }
+        return dateFormatter.string(from: Date())
+    }
+    
+    func GMTDateTimeToLocal(dateString: String) -> String? {
+        dateFormatter.dateFormat = "dd/MM/yyyy HH:mm"
+        dateFormatter.locale = .autoupdatingCurrent
+        dateFormatter.timeZone = .gmt
         
-        return sharedUser
+        let date = dateFormatter.date(from: dateString)
+        
+        dateFormatter.dateFormat = "E, dd MMM yyyy HH:mm"
+        dateFormatter.timeZone = .autoupdatingCurrent
+        
+        return dateFormatter.string(from: date ?? Date())
     }
 }

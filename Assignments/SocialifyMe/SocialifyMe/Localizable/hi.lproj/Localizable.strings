@@ -10,13 +10,13 @@
 "CFBundleDisplayName" = "सोशलिफ़ाई";
 
 // MARK: - View Controller Titles
-"signedOutHomeVCTitle" = "सोशलिफ़ाई";
-"signedOutSignUpVCTitle" = "साइन अप";
-"signedInHomeVCTitle" = "आपके लिए";
-"signedInFriendsVCTitle" = "आपके मित्रगण";
-"signedInMessagesVCTitle" = "संदेश";
-"signedInSettingsVC" = "सेटिंग्स";
-"signedInCreatePostVC" = "पोस्ट बनाएँ";
+"onboardingVCTitle" = "सोशलिफ़ाई";
+"signUpVCTitle" = "साइन अप";
+"homeTabVCTitle" = "आपके लिए";
+"exploreTabVCTitle" = "अन्वेषण";
+"messagesTabVCTitle" = "संदेश";
+"settingsTabVC" = "सेटिंग्स";
+"createPostVC" = "पोस्ट बनाएँ";
 
 // MARK: - Label Texts + Text Field Placeholders
 // The keys for both labels and text fields are the same
@@ -37,13 +37,16 @@
 "noContent" = "कोई चित्र नहीं";
 "noFriends" = "कोई मित्रगण नहीं";
 "noMessages" = "कोई संदेश नहीं";
-
-// MARK: - Buttons
-
+"labelPosts" = "पोस्ट";
+"labelFollowers" = "अनुयायि";
+"labelFollowing" = "फॉलो";
+"labelYourPosts" = "आपके पोस्ट्स";
+"labelNoPosts" = "कोई पोस्ट नहीं";
+"labelPostError" = "कुछ गड़बड़ हो गई";
 
 // MARK: - Tab Bar Titles
 "homeTab" = "घर";
-"friendsTab" = "मित्रगण";
+"friendsTab" = "अन्वेषण";
 "messagesTab" = "संदेश";
 "settingsTab" = "सेटिंग्स";
 

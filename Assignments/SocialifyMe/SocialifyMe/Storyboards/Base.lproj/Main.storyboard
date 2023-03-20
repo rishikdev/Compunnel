@@ -11,7 +11,7 @@
         <!--SocialifyMe-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController storyboardIdentifier="SignedOutHomeViewController" id="BYZ-38-t0r" customClass="SignedOutHomeViewController" customModule="SocialifyMe" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="OnboardingViewController" id="BYZ-38-t0r" customClass="OnboardingViewController" customModule="SocialifyMe" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -51,7 +51,7 @@
                                                                     <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="njz-vt-S8u">
                                                                         <rect key="frame" x="0.0" y="36" width="353" height="34"/>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                                        <textInputTraits key="textInputTraits" textContentType="username"/>
+                                                                        <textInputTraits key="textInputTraits" keyboardType="emailAddress" textContentType="email"/>
                                                                     </textField>
                                                                 </subviews>
                                                             </stackView>
@@ -485,7 +485,7 @@
                         <outlet property="labelFirstName" destination="Gyq-W2-gzn" id="PAY-c2-dVC"/>
                         <outlet property="labelGender" destination="lpT-sH-NZP" id="MI8-6E-fzo"/>
                         <outlet property="labelLastName" destination="672-nv-tRo" id="5Nl-gi-nXg"/>
-                        <outlet property="labelMiddle" destination="xr7-5W-sJN" id="m6X-xj-5DU"/>
+                        <outlet property="labelMiddleName" destination="xr7-5W-sJN" id="m6X-xj-5DU"/>
                         <outlet property="labelPassword" destination="Iuf-53-k47" id="NND-0S-EhO"/>
                         <outlet property="labelPhoneNumber" destination="84w-nM-Tqx" id="Dvx-Q4-NMk"/>
                         <outlet property="labelState" destination="aV0-tp-l7a" id="QVu-nw-e7c"/>

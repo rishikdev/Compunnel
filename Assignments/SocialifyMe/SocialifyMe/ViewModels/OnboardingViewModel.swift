@@ -7,7 +7,7 @@
 
 import UIKit
 
-/// `ViewModel` class for ``SignedOutHomeViewController``.
+/// `ViewModel` class for ``OnboardingViewController``.
 ///
 /// - Handles functionalities related to **signing users in** using `Email + Password`, `Google`, and `Facebook`.
 ///
@@ -17,46 +17,39 @@ import UIKit
 ///     - ``signInWithFacebook(currentViewController:completion:)``
 ///     - ``createUserProfileInFirebaseDatabase(userModel:completion:)``
 ///
-class SignedOutHomeViewModel {
+class OnboardingViewModel {
     
-    // MARK: - Properties
-    var localUser: LocalUser?
-    
-    // MARK: - INIT
-    init(localUser: LocalUser? = nil) {
-        self.localUser = localUser
-    }
-    
-//     MARK: - Sign In With Email And Password
+    // MARK: - Sign In With Email And Password
     /// Signs users in using their email address and password.
     ///
     /// - Calls ``FirebaseManager/signInWithEmailPassword(email:password:completion:)`` function.
-    /// - The parameter `completion` has three arguments:
+    ///
+    /// - The parameter `completion` has two arguments:
     ///     1. `String`: If the authentication was successful, this argument contains a success message. Otherwise, it contains the reason why the authentication failed.
     ///     2. `Bool`: A Boolean value indicating whether the authentication was successful or not.
-    ///     3. `LocalUser?`: If the authentication was successful, this argument has an object of type `LocalUser`. Otherwise, it is nil.
     ///
     /// - Parameters:
     ///   - email: The email address of the user
     ///   - password: The password of the user
-    ///   - completion: An escaping closure with three arguments
+    ///   - completion: An escaping closure with two arguments
     ///
-    func signInWithEmailPassword(email: String, password: String, completion: @escaping (String, Bool, LocalUser?) -> Void) {
-        FirebaseManager.shared.signInWithEmailPassword(email: email, password: password) { [weak self] signInMessage, isSignInSuccessful, userModel in
+    func signInWithEmailPassword(email: String, password: String, completion: @escaping (String, Bool) -> Void) {
+        FirebaseAuthenticationManager.shared.signInWithEmailPassword(email: email, password: password) { signInMessage, isSignInSuccessful, userModel in
             if(isSignInSuccessful) {
-                FirebaseManager.shared.downloadProfilePhotoFromFirebaseStorage(uid: userModel!.uid) { downloadedProfilePhotoURL, isProfilePhotoDownloaded in
+                FirebaseStorageManager.shared.downloadProfilePhotoFromFirebaseStorage(uid: userModel!.uid) { downloadedProfilePhotoURL, isProfilePhotoDownloaded in
                     DispatchQueue.main.async {
                         if(isProfilePhotoDownloaded) {
                             CoreDataManager.shared.createUserProfileInLocalStorage(userModel: userModel!, profilePhotoLocalStorageURL: downloadedProfilePhotoURL)
                         } else {
                             CoreDataManager.shared.createUserProfileInLocalStorage(userModel: userModel!, profilePhotoLocalStorageURL: nil)
                         }
-                        self?.localUser = CoreDataManager.shared.fetchLocalUsers()[0]
-                        completion(signInMessage, isSignInSuccessful, self?.localUser)
+                        SharedUser.shared.localUser = CoreDataManager.shared.fetchLocalUsers()[0]
+                        
+                        completion(signInMessage, isSignInSuccessful)
                     }
                 }
             } else {
-                completion(signInMessage, isSignInSuccessful, nil)
+                completion(signInMessage, isSignInSuccessful)
             }
         }
     }
@@ -65,32 +58,32 @@ class SignedOutHomeViewModel {
     /// Signs users in using their Google credentials.
     ///
     /// - Calls ``FirebaseManager/signInWithGoogle(withPresenting:completion:)`` function.
-    /// - The parameter 'completion' has four arguments:
+    /// - The parameter 'completion' has three arguments:
     ///     1. `String`: If the authentication was successful, this argument contains a success message. Otherwise, it contains the reason why the authentication failed.
     ///     2. `Bool`: A Boolean value indicating whether the authentication was successful or not.
-    ///     3. `LocalUser`?: If the authentication was successful, this argument has an object of type LocalUser. Otherwise, it is nil.
-    ///     4. `Bool`: A Boolean value indicating whether the user is a new user or a returning user
+    ///     3. `Bool`: A Boolean value indicating whether the user is a new user or a returning user
     ///
     /// - Parameters:
     ///   - currentViewController: The view controller calling this function
-    ///   - completion: An escaping closure with four arguments
+    ///   - completion: An escaping closure with three arguments
     ///
-    func signInWithGoogle(currentVewController: UIViewController, completion: @escaping (String, Bool, LocalUser?, Bool) -> Void) {
-        FirebaseManager.shared.signInWithGoogle(withPresenting: currentVewController) { [weak self] signInMessage, isSignInSuccessful, userModel, isNewUser in
+    func signInWithGoogle(currentVewController: UIViewController, completion: @escaping (String, Bool, Bool) -> Void) {
+        FirebaseAuthenticationManager.shared.signInWithGoogle(withPresenting: currentVewController) { signInMessage, isSignInSuccessful, userModel, isNewUser in
             if(isSignInSuccessful) {
-                FirebaseManager.shared.downloadProfilePhotoFromFirebaseStorage(uid: userModel!.uid) { downloadedProfilePhotoURL, isProfilePhotoDownloaded in
+                FirebaseStorageManager.shared.downloadProfilePhotoFromFirebaseStorage(uid: userModel!.uid) { downloadedProfilePhotoURL, isProfilePhotoDownloaded in
                     DispatchQueue.main.async {
                         if(isProfilePhotoDownloaded) {
                             CoreDataManager.shared.createUserProfileInLocalStorage(userModel: userModel!, profilePhotoLocalStorageURL: downloadedProfilePhotoURL)
                         } else {
                             CoreDataManager.shared.createUserProfileInLocalStorage(userModel: userModel!, profilePhotoLocalStorageURL: nil)
                         }
-                        self?.localUser = CoreDataManager.shared.fetchLocalUsers()[0]
-                        completion(signInMessage, isSignInSuccessful, self?.localUser, isNewUser)
+                        SharedUser.shared.localUser = CoreDataManager.shared.fetchLocalUsers()[0]
+                        
+                        completion(signInMessage, isSignInSuccessful, isNewUser)
                     }
                 }
             } else {
-                completion(signInMessage, isSignInSuccessful, nil, isNewUser)
+                completion(signInMessage, isSignInSuccessful, isNewUser)
             }
         }
     }
@@ -99,32 +92,31 @@ class SignedOutHomeViewModel {
     /// Signs users in using their Facebook credentials.
     ///
     ///  - Calls ``FirebaseManager/signInWithFacebook(viewController:completion:)`` function.
-    ///  - The parameter 'completion' has four arguments:
+    ///  - The parameter 'completion' has three arguments:
     ///     1. `String`: If the authentication was successful, this argument contains a success message. Otherwise, it contains the reason why the authentication failed.
     ///     2. `Bool`: A Boolean value indicating whether the authentication was successful or not.
-    ///     3. `LocalUser?`: If the authentication was successful, this argument has an object of type `LocalUser`. Otherwise, it is nil.
     ///     4. `Bool`: A Boolean value indicating whether the user is a new user or a returning user
     ///
     /// - Parameters:
     ///   - currentViewController: The view controller calling this function
-    ///   - completion: An escaping closure with four arguments
+    ///   - completion: An escaping closure with three arguments
     ///
-    func signInWithFacebook(currentViewController: UIViewController, completion: @escaping (String, Bool, LocalUser?, Bool) -> Void) {
-        FirebaseManager.shared.signInWithFacebook(viewController: currentViewController) { [weak self] signInMessage, isSignInSuccessful, userModel, isNewUser in
+    func signInWithFacebook(currentViewController: UIViewController, completion: @escaping (String, Bool, Bool) -> Void) {
+        FirebaseAuthenticationManager.shared.signInWithFacebook(viewController: currentViewController) { signInMessage, isSignInSuccessful, userModel, isNewUser in
             if(isSignInSuccessful) {
-                FirebaseManager.shared.downloadProfilePhotoFromFirebaseStorage(uid: userModel!.uid) { downloadedProfilePhotoURL, isProfilePhotoDownloaded in
+                FirebaseStorageManager.shared.downloadProfilePhotoFromFirebaseStorage(uid: userModel!.uid) { downloadedProfilePhotoURL, isProfilePhotoDownloaded in
                     DispatchQueue.main.async {
                         if(isProfilePhotoDownloaded) {
                             CoreDataManager.shared.createUserProfileInLocalStorage(userModel: userModel!, profilePhotoLocalStorageURL: downloadedProfilePhotoURL)
                         } else {
                             CoreDataManager.shared.createUserProfileInLocalStorage(userModel: userModel!, profilePhotoLocalStorageURL: nil)
                         }
-                        self?.localUser = CoreDataManager.shared.fetchLocalUsers()[0]
-                        completion(signInMessage, isSignInSuccessful, self?.localUser, isNewUser)
+                        SharedUser.shared.localUser = CoreDataManager.shared.fetchLocalUsers()[0]
+                        completion(signInMessage, true, isNewUser)
                     }
                 }
             } else {
-                completion(signInMessage, isSignInSuccessful, nil, isNewUser)
+                completion(signInMessage, false, isNewUser)
             }
         }
     }
@@ -147,6 +139,6 @@ class SignedOutHomeViewModel {
     ///
     func createUserProfileInFirebaseDatabase(userModel: UserModel, completion: @escaping (String, Bool) -> Void) {
         let userDictionary = HelperFunctions.shared.getUserDictionary(userModel: userModel)
-        FirebaseManager.shared.createUserProfileInFirebaseDatabase(uid: userModel.uid, userDictionary: userDictionary) { message, isProfileCreated in completion(message, isProfileCreated) }
+        FirebaseRealtimeDatabaseManager.shared.createUserProfileInFirebaseDatabase(uid: userModel.uid, userDictionary: userDictionary) { message, isProfileCreated in completion(message, isProfileCreated) }
     }
 }

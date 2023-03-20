@@ -5,14 +5,10 @@
 //  Created by Rishik Dev on 21/02/23.
 //
 
-import UIKit
+import Foundation
 import FirebaseAuth
-import FirebaseDatabase
-import FirebaseStorage
-import FirebaseStorage
-import FacebookLogin
 
-/// `ViewModel` class for ``SignUpViewController`` and ``EditDetailsViewController``
+/// `ViewModel` class for ``SignUpViewController`` and ``EditProfileViewController``
 ///
 /// - Handles functionalities related to **creating user profiles**.
 ///
@@ -25,17 +21,8 @@ import FacebookLogin
 ///     - ``fetchUserProfilesFromLocalStorage()``
 ///     - ``createUserProfileInLocalStorage(userModel:profilePhotoURL:)``
 ///     - ``updateUserProfileInLocalStorage(localUser:updatedUserModel:profilePhotoURL:)``
-///     - ``deleteAllLocalUsers(entity:)``
 ///
-class EditUserDetailsViewModel {
-    
-    // MARK: - Properties
-    var localUser: LocalUser?
-    
-    // MARK: - Initialization
-    init(localUser: LocalUser? = nil) {
-        self.localUser = localUser
-    }
+class EditProfileViewModel {
     
     // MARK: - Firebase Realtime Database Functions
     
@@ -57,13 +44,13 @@ class EditUserDetailsViewModel {
     ///
     func createUserProfileInFirebaseDatabase(userModel: UserModel, completion: @escaping (String, Bool) -> Void) {
         let userDictionary = HelperFunctions.shared.getUserDictionary(userModel: userModel)
-        FirebaseManager.shared.createUserProfileInFirebaseDatabase(uid: userModel.uid, userDictionary: userDictionary) { message, isProfileCreated in completion(message, isProfileCreated) }
+        FirebaseRealtimeDatabaseManager.shared.createUserProfileInFirebaseDatabase(uid: userModel.uid, userDictionary: userDictionary) { message, isProfileCreated in completion(message, isProfileCreated) }
     }
     
     // MARK: Update User Profile In Firebase Database
     /// Updates user's profile in Firebase Realtime Database
     ///
-    /// - Creates a ``UserModel`` object and converts it to a dictionary.
+    /// - Creates a ``UserModel`` object and converts it into a dictionary.
     /// - Calls ``FirebaseManager/updateUserProfileInFirebaseDatabase(uid:userDictionary:completion:)`` function.
     /// - The parameter `completion` has three arguments:
     ///     1. `String`: If the profile was successfully updated in **Firebase**, this argument contains a success message. Otherwise, it contains the reason why the profile updation failed.
@@ -76,7 +63,7 @@ class EditUserDetailsViewModel {
     ///
     func updateUserProfileInFirebaseDatabase(userModel: UserModel, completion: @escaping (String, Bool, UserModel) -> Void) {
         let userDictionary = HelperFunctions.shared.getUserDictionary(userModel: userModel)
-        FirebaseManager.shared.updateUserProfileInFirebaseDatabase(uid: userModel.uid, userDictionary: userDictionary) { message, isProfileCreated in completion(message, isProfileCreated, userModel) }
+        FirebaseRealtimeDatabaseManager.shared.updateUserProfileInFirebaseDatabase(uid: userModel.uid, userDictionary: userDictionary) { message, isProfileCreated in completion(message, isProfileCreated, userModel) }
     }
     
     // MARK: - Firebase Storage Funcions
@@ -95,7 +82,7 @@ class EditUserDetailsViewModel {
     ///   - completion: An escaping closure with two arguments.
     ///
     func uploadProfilePhoto(uid: String, from urlPath: URL, completion: @escaping (String, String?, Bool) -> Void) {
-        FirebaseManager.shared.uploadProfilePhotoToFirebaseStorage(uid: uid, from: urlPath) { message, downloadURL, isProfilePhotoUploaded in completion (message, downloadURL, isProfilePhotoUploaded)}
+        FirebaseStorageManager.shared.uploadProfilePhotoToFirebaseStorage(uid: uid, from: urlPath) { message, downloadURL, isProfilePhotoUploaded in completion (message, downloadURL, isProfilePhotoUploaded)}
     }
     
     // MARK: Download Profile Photo
@@ -111,7 +98,7 @@ class EditUserDetailsViewModel {
     ///   - completion: An escaping closure with two arguments.
     ///
     func downloadProfilePhoto(uid: String, completion: @escaping (URL?, Bool) -> Void) {
-        FirebaseManager.shared.downloadProfilePhotoFromFirebaseStorage(uid: uid) { downloadedProfilePhotoURL, isProfileDownloaded in completion(downloadedProfilePhotoURL, isProfileDownloaded) }
+        FirebaseStorageManager.shared.downloadProfilePhotoFromFirebaseStorage(uid: uid) { downloadedProfilePhotoURL, isProfileDownloaded in completion(downloadedProfilePhotoURL, isProfileDownloaded) }
     }
     
     // MARK: - Firebase Authentication Functions
@@ -131,7 +118,7 @@ class EditUserDetailsViewModel {
     ///   - completion: An escaping closure with three arguments.
     ///
     func createAccount(email: String, password: String, completion: @escaping (String, Bool, User?) -> Void) {
-        FirebaseManager.shared.createAccount(email: email, password: password) { message, isAccountCreated, user in completion(message, isAccountCreated, user) }
+        FirebaseAuthenticationManager.shared.createAccount(email: email, password: password) { message, isAccountCreated, user in completion(message, isAccountCreated, user) }
     }
     
     // MARK: - Core Data Functions
@@ -169,7 +156,7 @@ class EditUserDetailsViewModel {
         // Adding a new user
         CoreDataManager.shared.createUserProfileInLocalStorage(userModel: userModel, profilePhotoLocalStorageURL: profilePhotoURL)
         
-        self.localUser = CoreDataManager.shared.fetchLocalUsers()[0]
+        SharedUser.shared.localUser = CoreDataManager.shared.fetchLocalUsers()[0]
     }
     
     // MARK: Update User Profile In Local Storage
@@ -188,19 +175,6 @@ class EditUserDetailsViewModel {
     func updateUserProfileInLocalStorage(localUser: LocalUser, updatedUserModel: UserModel, profilePhotoURL: URL?) {
         CoreDataManager.shared.updateUserProfileInLocalStorage(localUser: localUser, updatedUserModel: updatedUserModel, profilePhotoURL: profilePhotoURL)
         
-        // self.localUser refers to the locaUser property of UserViewModel class
-        self.localUser = CoreDataManager.shared.fetchLocalUsers()[0]
-    }
-    
-    // MARK: - Delete All Local Users
-    @available(*, deprecated, message: "This function will be moved to SignedOutHomeViewModel.")
-    /// Deletes every object of the `entity` provided.
-    ///
-    /// Calls ``CoreDataManager/deleteAllLocalUsers(entity:)`` function.
-    ///
-    /// - Parameter entity: Name of the entity the objects of which need to be deleted
-    ///
-    func deleteAllLocalUsers(entity: String) {
-        CoreDataManager.shared.deleteAllLocalUsers(entity: entity)
+        SharedUser.shared.localUser = CoreDataManager.shared.fetchLocalUsers()[0]
     }
 }

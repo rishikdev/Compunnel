@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SignedInMessagesViewController: UIViewController {
+class MessagesTabViewController: UIViewController {
 
     @IBOutlet weak var labelNoMessages: UILabel!
     
@@ -15,6 +15,7 @@ class SignedInMessagesViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        self.hideKeyboardWhenTappedAround()
         title =  Constants.TabBarTitles.messagesTab
         labelNoMessages.text = Constants.LabelTexts.noMessages
     }

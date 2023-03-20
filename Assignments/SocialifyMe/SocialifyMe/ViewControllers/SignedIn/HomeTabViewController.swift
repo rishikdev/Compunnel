@@ -7,20 +7,23 @@
 
 import UIKit
 
-class SignedInHomeViewController: UIViewController {
+class HomeTabViewController: UIViewController {
         
     @IBOutlet weak var labelNoContent: UILabel!
     
-    var signedInHomeVM: SignedInHomeViewModel!
-    var localUser: LocalUser!
-    var sharedUser: SharedUser!
+    var homeTabVM: HomeTabViewModel!
     var postPhotoURLPath: URL?
-    var posts: [PostModel]?
                 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        self.hideKeyboardWhenTappedAround()
         initialConfiguration()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        fetchPosts()
     }
 }

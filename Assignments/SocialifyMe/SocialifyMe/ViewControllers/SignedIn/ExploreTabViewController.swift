@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SignedInFriendsViewController: UIViewController {
+class ExploreTabViewController: UIViewController {
 
     @IBOutlet weak var labelNoFriends: UILabel!
     
@@ -15,7 +15,8 @@ class SignedInFriendsViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        title =  Constants.TabBarTitles.friendsTab
-        labelNoFriends.text = Constants.LabelTexts.noFriends
+        self.hideKeyboardWhenTappedAround()
+        title =  Constants.TabBarTitles.exploreTab
+//        labelNoFriends.text = Constants.LabelTexts.noFriends
     }
 }

@@ -7,17 +7,41 @@
 
 import UIKit
 
-extension EditDetailsViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    
+extension EditProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func initialConfiguration() {
+        populateLabelsAndTextFieldPlaceholders()
         configureProfilePhoto()
         addSaveButton()
         setDatePicker()
         configureButtonSelectGender()
-        convertStringGenderToEnumGender(stringGender: localUser.gender ?? Constants.Genders.male.rawValue)
+        convertStringGenderToEnumGender(stringGender: SharedUser.shared.localUser?.gender ?? Constants.Genders.male.rawValue)
         populateTextFields()
+        
         self.isNewProfilePhotoSelected = false
-        self.editUserDetailsVM = EditUserDetailsViewModel()
+        self.editProfileVM = EditProfileViewModel()
+    }
+    
+    func populateLabelsAndTextFieldPlaceholders() {
+        labelFirstName.text = Constants.LabelTexts.firstName
+        labelMiddleName.text = Constants.LabelTexts.middleName
+        labelLastName.text = Constants.LabelTexts.lastName
+        labelGender.text = Constants.LabelTexts.gender
+        labelEmail.text = Constants.TextFieldPlaceholders.email
+        labelPhoneNumber.text = Constants.LabelTexts.phoneNumber
+        labelAgeValue.text = Constants.LabelTexts.age
+        labelDateOfBirth.text = Constants.LabelTexts.dateOfBirth
+        labelCity.text = Constants.LabelTexts.city
+        labelState.text = Constants.LabelTexts.state
+        labelCountry.text = Constants.LabelTexts.country
+        
+        textFieldFirstName.placeholder = Constants.TextFieldPlaceholders.firstName
+        textFieldMiddleName.placeholder = Constants.TextFieldPlaceholders.middleName
+        textFieldLastName.placeholder = Constants.TextFieldPlaceholders.lastName
+        textFieldEmail.placeholder = Constants.TextFieldPlaceholders.email
+        textFieldPhoneNumber.placeholder = Constants.TextFieldPlaceholders.phoneNumber
+        textFieldCity.placeholder = Constants.TextFieldPlaceholders.city
+        textFieldState.placeholder = Constants.TextFieldPlaceholders.state
+        textFieldCountry.placeholder = Constants.TextFieldPlaceholders.country
     }
     
     func configureProfilePhoto() {
@@ -32,9 +56,9 @@ extension EditDetailsViewController: UIImagePickerControllerDelegate, UINavigati
     }
     
     func populateTextFields() {
-        guard let user = localUser else { return }
+        guard let sharedLocalUser = SharedUser.shared.localUser else { return }
         
-        if(user.profilePhotoLocalStorageURL != nil) {
+        if(sharedLocalUser.profilePhotoLocalStorageURL != nil) {
             DispatchQueue.main.async {
                 let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
                 let filePath = documentsURL.appendingPathComponent(Constants.ProfilePhoto.name + Constants.ProfilePhoto.extn).path
@@ -45,17 +69,17 @@ extension EditDetailsViewController: UIImagePickerControllerDelegate, UINavigati
             }
         }
         
-        textFieldFirstName.text = user.firstName
-        textFieldMiddleName.text = user.middleName ?? ""
-        textFieldLastName.text = user.lastName
+        textFieldFirstName.text = sharedLocalUser.firstName
+        textFieldMiddleName.text = sharedLocalUser.middleName ?? ""
+        textFieldLastName.text = sharedLocalUser.lastName
         changeButtonSelectGender(to: selectedGender)
-        textFieldEmail.text = user.email
-        textFieldPhoneNumber.text = user.phoneNumber
-        labelAge.text = "\(user.age)"
-        datePickerDateOfBirth.date = user.dateOfBirth ?? Date()
-        textFieldCity.text = user.city
-        textFieldState.text = user.state
-        textFieldCountry.text = user.country
+        textFieldEmail.text = sharedLocalUser.email
+        textFieldPhoneNumber.text = sharedLocalUser.phoneNumber
+        labelAgeValue.text = "\(sharedLocalUser.age)"
+        datePickerDateOfBirth.date = sharedLocalUser.dateOfBirth ?? Date()
+        textFieldCity.text = sharedLocalUser.city
+        textFieldState.text = sharedLocalUser.state
+        textFieldCountry.text = sharedLocalUser.country
     }
     
     func setDatePicker() {
@@ -176,8 +200,10 @@ extension EditDetailsViewController: UIImagePickerControllerDelegate, UINavigati
         guard let country = textFieldCountry.text,
               ValidateData.shared.isValidCountry(value: country) else { completion(Constants.Alerts.Messages.country, false); return }
         
-        var userModel = UserModel(uid: localUser.uid!,
-                                  providerName: localUser.providerName,
+        let sharedLocalUser = SharedUser.shared.localUser!
+        
+        var userModel = UserModel(uid: sharedLocalUser.uid!,
+                                  providerName: sharedLocalUser.providerName,
                                   firstName: firstName,
                                   middleName: self.textFieldMiddleName.text,
                                   lastName: lastName,
@@ -188,26 +214,26 @@ extension EditDetailsViewController: UIImagePickerControllerDelegate, UINavigati
                                   dateOfBirth: dateOfBirth,
                                   city: city,
                                   state: state,
-                                  country: country)
+                                  country: country,
+                                  profilePhotoFirebaseStorageURL: SharedUser.shared.localUser?.profilePhotoFirebaseStorageURL)
         
         if self.isNewProfilePhotoSelected,
            let profilePhotoURLPath = self.profilePhotoURLPath,
-           let uid = self.localUser.uid {
-            self.editUserDetailsVM?.uploadProfilePhoto(uid: uid, from: profilePhotoURLPath) { [weak self] uploadProfilePhotoMessage, downloadURL, isProfilePhotoUploaded in
+           let uid = sharedLocalUser.uid {
+            self.editProfileVM?.uploadProfilePhoto(uid: uid, from: profilePhotoURLPath) { [weak self] uploadProfilePhotoMessage, downloadURL, isProfilePhotoUploaded in
                 if(isProfilePhotoUploaded) {
                     userModel.profilePhotoFirebaseStorageURL = downloadURL
-                    self?.editUserDetailsVM?.updateUserProfileInFirebaseDatabase(userModel: userModel) { [weak self] updateProfileMessage, isProfileUpdated, updatedUserModel in
+                    self?.editProfileVM?.updateUserProfileInFirebaseDatabase(userModel: userModel) { [weak self] updateProfileMessage, isProfileUpdated, updatedUserModel in
                         if(isProfileUpdated) {
-                            self?.sharedUser = HelperFunctions.shared.getSharedUser(userModel: updatedUserModel)
                             /// Profile was successfully updated
-                            self?.editUserDetailsVM?.downloadProfilePhoto(uid: uid) { [weak self] downloadedProfilePhotoURL, isProfilePhotoDownloaded in
+                            self?.editProfileVM?.downloadProfilePhoto(uid: uid) { [weak self] downloadedProfilePhotoURL, isProfilePhotoDownloaded in
                                 if(isProfilePhotoDownloaded) {
                                     /// Profile photo was successfully uploaded and downloaded to local storage
-                                    self?.editUserDetailsVM?.updateUserProfileInLocalStorage(localUser: (self?.localUser)!, updatedUserModel: updatedUserModel, profilePhotoURL: downloadedProfilePhotoURL)
+                                    self?.editProfileVM?.updateUserProfileInLocalStorage(localUser: sharedLocalUser, updatedUserModel: updatedUserModel, profilePhotoURL: downloadedProfilePhotoURL)
                                     completion(updateProfileMessage, true)
                                 } else {
                                     /// Profile photo was successfully uploaded, but could not be downloaded to local storage
-                                    self?.editUserDetailsVM?.updateUserProfileInLocalStorage(localUser: (self?.localUser)!, updatedUserModel: updatedUserModel, profilePhotoURL: nil)
+                                    self?.editProfileVM?.updateUserProfileInLocalStorage(localUser: sharedLocalUser, updatedUserModel: updatedUserModel, profilePhotoURL: nil)
                                     completion(Constants.Alerts.Messages.successfulProfileUpdationUnsuccessfulProfilePhotoUpload, true)
                                 }
                             }
@@ -223,11 +249,10 @@ extension EditDetailsViewController: UIImagePickerControllerDelegate, UINavigati
             }
         } else {
             /// User did not choose a profile photo or there was something wrong with the selected profile photo
-            self.editUserDetailsVM?.updateUserProfileInFirebaseDatabase(userModel: userModel) { [weak self] updateProfileMessage, isProfileUpdated, updatedUserModel in
+            self.editProfileVM?.updateUserProfileInFirebaseDatabase(userModel: userModel) { [weak self] updateProfileMessage, isProfileUpdated, updatedUserModel in
                 if(isProfileUpdated) {
                     /// Profile was successfully updated
-                    self?.sharedUser = HelperFunctions.shared.getSharedUser(userModel: updatedUserModel)
-                    self?.editUserDetailsVM?.updateUserProfileInLocalStorage(localUser: (self?.localUser)!, updatedUserModel: updatedUserModel, profilePhotoURL: nil)
+                    self?.editProfileVM?.updateUserProfileInLocalStorage(localUser: sharedLocalUser, updatedUserModel: updatedUserModel, profilePhotoURL: sharedLocalUser.profilePhotoLocalStorageURL)
                     completion(updateProfileMessage, true)
                 } else {
                     /// Profile could not be updated
