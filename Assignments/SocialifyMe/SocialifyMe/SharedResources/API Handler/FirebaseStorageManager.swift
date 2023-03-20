@@ -14,12 +14,11 @@ import FirebaseStorage
 ///     - ``storageRef``
 ///
 /// - Functions:
-///     - **Firebase Storage Functions**
 ///     - ``uploadProfilePhotoToFirebaseStorage(uid:from:completion:)``
 ///     - ``downloadProfilePhotoFromFirebaseStorage(uid:completion:)``
 ///     - ``uploadPostToFirebaseStorage(user:from:description:completion:)``
 ///
-class FirebaseStorageManager {
+class FirebaseStorageManager: FirebaseStorageService {
     var storageRef: StorageReference!
     
     static let shared = FirebaseStorageManager()
@@ -103,7 +102,7 @@ class FirebaseStorageManager {
     //MARK: - Upload Post To Firebase Storage
     /// Uploads user's posts to **Firebase Storage**.
     ///
-    /// - Calls ``FirebaseManager/uploadPostMetadataToFirebaseDatabase(uid:postMetadata:userInfo:completion:)`` to upload the `metadata` of the selected photo to **Firebase Realtime Database** to get the `primary key` associated with it.
+    /// - Calls ``FirebaseRealtimeDatabaseManager/uploadPostMetadataToFirebaseDatabase(uid:postMetadata:userInfo:completion:)`` to upload the `metadata` of the selected photo to **Firebase Realtime Database** to get the `primary key` associated with it.
     /// - The parameter `completion` has two arguments:
     ///     1. `String`: If the upload was successful, this argument contains a success message. Otherwise, it contains the reason why the upload failed.
     ///     2. `Bool`: Indicating whether the photo was uploaded or not.

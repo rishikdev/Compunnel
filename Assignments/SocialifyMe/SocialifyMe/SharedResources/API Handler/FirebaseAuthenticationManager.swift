@@ -16,7 +16,6 @@ import FacebookLogin
 ///     - ``facebookLoginManager``
 ///
 /// - Functions:
-///     - **Firebase Authentication Functions**
 ///     - ``createAccount(email:password:completion:)``
 ///     - ``determineProvider(for:completion:)``
 ///     - ``signInWithEmailPassword(email:password:completion:)``
@@ -24,7 +23,7 @@ import FacebookLogin
 ///     - ``signInWithFacebook(viewController:completion:)``
 ///     - ``signOut(completion:)``
 ///
-class FirebaseAuthenticationManager {
+class FirebaseAuthenticationManager: FirebaseAuthenticationService {
     var facebookLoginManager: LoginManager!
     
     static let shared = FirebaseAuthenticationManager()

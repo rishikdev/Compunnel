@@ -21,6 +21,7 @@
 		5C3D305F29BBE60B00D28A0D /* HomeTabViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3D305E29BBE60B00D28A0D /* HomeTabViewControllerExtension.swift */; };
 		5C3EE5DF29C89DEA00460E93 /* FirebaseStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3EE5DE29C89DEA00460E93 /* FirebaseStorageManager.swift */; };
 		5C3EE5E129C89F5300460E93 /* FirebaseRealtimeDatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3EE5E029C89F5300460E93 /* FirebaseRealtimeDatabaseManager.swift */; };
+		5C3EE5E329C8A7BC00460E93 /* ManagerProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3EE5E229C8A7BC00460E93 /* ManagerProtocols.swift */; };
 		5C42C26A29B16F3800B5CC6C /* EditProfileViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C42C26929B16F3800B5CC6C /* EditProfileViewControllerExtension.swift */; };
 		5C48D6B929C129F90081B1F0 /* CreatePostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C48D6B829C129F90081B1F0 /* CreatePostViewController.swift */; };
 		5C48D6BC29C12F230081B1F0 /* CreatePostViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C48D6BB29C12F230081B1F0 /* CreatePostViewControllerExtension.swift */; };
@@ -104,6 +105,7 @@
 		5C3D305E29BBE60B00D28A0D /* HomeTabViewControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTabViewControllerExtension.swift; sourceTree = "<group>"; };
 		5C3EE5DE29C89DEA00460E93 /* FirebaseStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseStorageManager.swift; sourceTree = "<group>"; };
 		5C3EE5E029C89F5300460E93 /* FirebaseRealtimeDatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseRealtimeDatabaseManager.swift; sourceTree = "<group>"; };
+		5C3EE5E229C8A7BC00460E93 /* ManagerProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagerProtocols.swift; sourceTree = "<group>"; };
 		5C42C26929B16F3800B5CC6C /* EditProfileViewControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewControllerExtension.swift; sourceTree = "<group>"; };
 		5C48D6B829C129F90081B1F0 /* CreatePostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePostViewController.swift; sourceTree = "<group>"; };
 		5C48D6BB29C12F230081B1F0 /* CreatePostViewControllerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePostViewControllerExtension.swift; sourceTree = "<group>"; };
@@ -190,6 +192,7 @@
 			children = (
 				5CC9753929BB8C54009FB97F /* SharedUser.swift */,
 				5C13ED3229BA909700114B1A /* HelperFunctions.swift */,
+				5C3EE5E229C8A7BC00460E93 /* ManagerProtocols.swift */,
 				5C13ED2B29BA8FD000114B1A /* Extensions */,
 				5C888F5529B248CF007B1B80 /* CoreData */,
 				5C14153129AFD73800D2639C /* API Handler */,
@@ -564,6 +567,7 @@
 				5CBB237029AE56C200111371 /* OnboardingViewController.swift in Sources */,
 				5CBB23CB29AE680C00111371 /* UserModel.swift in Sources */,
 				5C79B2B929BFC56500FB263B /* PostView.swift in Sources */,
+				5C3EE5E329C8A7BC00460E93 /* ManagerProtocols.swift in Sources */,
 				5CB7EFFC29B939D900E8729D /* OnboardingViewModel.swift in Sources */,
 				5CBB236C29AE56C200111371 /* AppDelegate.swift in Sources */,
 				5CBB23E129AE9A5700111371 /* EditProfileViewModel.swift in Sources */,

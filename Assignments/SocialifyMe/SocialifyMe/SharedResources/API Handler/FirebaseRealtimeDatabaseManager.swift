@@ -13,7 +13,6 @@ import FirebaseDatabase
 ///     - ``databaseRef``
 ///
 /// - Functions:
-///     - **Firebase Realtime Database Functions**
 ///     - ``createUserProfileInFirebaseDatabase(uid:userDictionary:completion:)``
 ///     - ``updateUserProfileInFirebaseDatabase(uid:userDictionary:completion:)``
 ///     - ``fetchUserProfileFromFirebaseDatabase(uid:completion:)``
@@ -22,7 +21,7 @@ import FirebaseDatabase
 ///     - ``fetchPostsMetadataFromFirebaseDatabase(completion:)``
 ///     - ``updateUserInfoInFirebaseDatabase(uid:userName:profilePhotoFirebaseStorageURL:)``
 ///
-class FirebaseRealtimeDatabaseManager {
+class FirebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseService {
     var databaseRef: DatabaseReference!
     
     static let shared = FirebaseRealtimeDatabaseManager()
