@@ -41,8 +41,6 @@ class SignUpViewController: UIViewController {
     @IBOutlet weak var stackViewEmailPassword: UIStackView!
     @IBOutlet weak var buttonSignUp: UIButton!
     
-    var databaseRef: DatabaseReference?
-    var storageRef: StorageReference?
     var editProfileVM: EditProfileViewModel?
     var dateOfBirth: Date?
     var genderMenu: UIMenu!

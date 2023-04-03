@@ -10,7 +10,9 @@ import UIKit
 extension SettingsTabViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func initialConfiguration() {
         self.navigationItem.title =  Constants.VCTitles.settingsTabVC
-        self.settingsTabVM = SettingsTabViewModel()
+        self.settingsTabVM = SettingsTabViewModel(firebaseAuthenticationManager: FirebaseAuthenticationManager.shared,
+                                                  firebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseManager.shared,
+                                                  coreDataManager: CoreDataManager.shared)
         
         configureButton(button: buttonEditProfile, buttonTitle: Constants.Buttons.editProfile, buttonColour: .systemBlue)
         configureButton(button: buttonSignOut, buttonTitle: Constants.Buttons.signOut, buttonColour: .systemRed)
@@ -69,6 +71,8 @@ extension SettingsTabViewController: UICollectionViewDelegate, UICollectionViewD
                 if(self!.settingsTabVM.posts.count == 0) {
                     self?.labelPostFetchInfo.text = Constants.LabelTexts.labelNoPosts
                     self?.labelPostFetchInfo.isHidden = false
+                } else {
+                    self?.labelPostFetchInfo.isHidden = true
                 }
                 self?.collectionViewUserPosts.reloadData()
             } else {
@@ -95,8 +99,6 @@ extension SettingsTabViewController: UICollectionViewDelegate, UICollectionViewD
     func editProfile() {
         guard let editProfileVC = storyboard?.instantiateViewController(withIdentifier: "EditProfileViewController") as? EditProfileViewController else { return }
         
-        editProfileVC.databaseRef = databaseRef
-        editProfileVC.storageRef = storageRef
         editProfileVC.dateOfBirth = SharedUser.shared.localUser?.dateOfBirth
         
         navigationController?.pushViewController(editProfileVC, animated: true)

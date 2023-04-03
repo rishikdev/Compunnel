@@ -19,7 +19,7 @@ extension CreatePostViewController: UIImagePickerControllerDelegate, UINavigatio
         self.buttonPost.isEnabled = false
         configureTextView()
         
-        self.createPostVM = CreatePostViewModel()
+        self.createPostVM = CreatePostViewModel(firebaseStorageManager: FirebaseStorageManager.shared)
         
         configureButtons(button: buttonCancel, buttonTitle: Constants.Buttons.cancel, buttonColour: .red)
         configureButtons(button: buttonPost, buttonTitle: Constants.Buttons.post, buttonColour: .systemBlue)

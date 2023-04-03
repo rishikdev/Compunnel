@@ -16,7 +16,10 @@ extension SignUpViewController: UIImagePickerControllerDelegate, UINavigationCon
         setDatePicker()
         configureButtonSelectGender()
         populateLabelsAndTextFieldPlaceholders()
-        self.editProfileVM = EditProfileViewModel()
+        self.editProfileVM = EditProfileViewModel(firebaseAuthenticationManager: FirebaseAuthenticationManager.shared,
+                                                  firebaseStorageManager: FirebaseStorageManager.shared,
+                                                  firebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseManager.shared,
+                                                  coreDataManager: CoreDataManager.shared)
     }
     
     func populateLabelsAndTextFieldPlaceholders() {
@@ -216,13 +219,13 @@ extension SignUpViewController: UIImagePickerControllerDelegate, UINavigationCon
             
             if !didUserCancelProfilePhotoSelection,
                let profilePhotoURLPath = profilePhotoURLPath {
-                self.editProfileVM?.uploadProfilePhoto(uid: uid, from: profilePhotoURLPath) { [weak self] uploadProfilePhotoMessage, downloadURL, isProfilePhotoUploaded in
+                self.editProfileVM?.uploadProfilePhotoToFirebaseStorage(uid: uid, from: profilePhotoURLPath) { [weak self] uploadProfilePhotoMessage, downloadURL, isProfilePhotoUploaded in
                     if(isProfilePhotoUploaded) {
                         userModel.profilePhotoFirebaseStorageURL = downloadURL
                         self?.editProfileVM?.updateUserProfileInFirebaseDatabase(userModel: userModel) { [weak self] updateProfileMessage, isProfileUpdated, updatedUserModel in
                             if(isProfileUpdated) {
                                 /// Profile was successfully updated
-                                self?.editProfileVM?.downloadProfilePhoto(uid: uid) { [weak self] downloadedProfilePhotoURL, isProfilePhotoDownloaded in
+                                self?.editProfileVM?.downloadProfilePhotoFromFirebaseStorage(uid: uid) { [weak self] downloadedProfilePhotoURL, isProfilePhotoDownloaded in
                                     if(isProfilePhotoDownloaded) {
                                         /// Profile photo was successfully uploaded and downloaded to local storage
                                         self?.editProfileVM?.updateUserProfileInLocalStorage(localUser: localUser, updatedUserModel: updatedUserModel, profilePhotoURL: downloadedProfilePhotoURL)
@@ -269,12 +272,12 @@ extension SignUpViewController: UIImagePickerControllerDelegate, UINavigationCon
                     
                     if !self!.didUserCancelProfilePhotoSelection,
                        let profilePhotoURLPath = self?.profilePhotoURLPath {
-                        self?.editProfileVM?.uploadProfilePhoto(uid: uid, from: profilePhotoURLPath) { [weak self] uploadProfilePhotoMessage, downloadURL, isProfilePhotoUploaded in
+                        self?.editProfileVM?.uploadProfilePhotoToFirebaseStorage(uid: uid, from: profilePhotoURLPath) { [weak self] uploadProfilePhotoMessage, downloadURL, isProfilePhotoUploaded in
                             if(isProfilePhotoUploaded) {
                                 userModel.profilePhotoFirebaseStorageURL = downloadURL
                                 self?.editProfileVM?.createUserProfileInFirebaseDatabase(userModel: userModel) { [weak self] createProfileMessage , isProfileCreated in
                                     if(isProfileCreated) {
-                                        self?.editProfileVM?.downloadProfilePhoto(uid: uid) { [weak self] downloadedProfilePhotoURL, isProfilePhotoDownloaded in
+                                        self?.editProfileVM?.downloadProfilePhotoFromFirebaseStorage(uid: uid) { [weak self] downloadedProfilePhotoURL, isProfilePhotoDownloaded in
                                             if(isProfilePhotoDownloaded) {
                                                 /// Profile photo was successfully uploaded and downloaded to local storage
                                                 self?.editProfileVM?.createUserProfileInLocalStorage(userModel: userModel, profilePhotoURL: downloadedProfilePhotoURL)
@@ -321,8 +324,6 @@ extension SignUpViewController: UIImagePickerControllerDelegate, UINavigationCon
         let activityIndicator = addActivityIndicator()
         registerUser(providerName: Constants.Providers.emailPassword) { [weak self] message, isRegistrationSuccessful in
             guard let signedInTabBarController = UIStoryboard(name: "SignedIn", bundle: nil).instantiateViewController(withIdentifier: "SignedInTabBarController") as? SignedInTabBarController else { return }
-            signedInTabBarController.databaseRef = self?.databaseRef
-            signedInTabBarController.storageRef = self?.storageRef
             
             DispatchQueue.main.async {
                 self?.removeActivityIndicator(activityIndicator: activityIndicator)

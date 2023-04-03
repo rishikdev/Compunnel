@@ -18,7 +18,7 @@ import FirebaseStorage
 ///     - ``downloadProfilePhotoFromFirebaseStorage(uid:completion:)``
 ///     - ``uploadPostToFirebaseStorage(user:from:description:completion:)``
 ///
-class FirebaseStorageManager: FirebaseStorageService {
+class FirebaseStorageManager: FirebaseStorageManagerProtocol {
     var storageRef: StorageReference!
     
     static let shared = FirebaseStorageManager()
@@ -55,7 +55,7 @@ class FirebaseStorageManager: FirebaseStorageService {
                     completion(Constants.Alerts.Messages.successfulProfilePhotoUpload, nil, true)
                     return
                 }
-                FirebaseRealtimeDatabaseManager.shared.updateUserInfoInFirebaseDatabase(uid: uid, profilePhotoFirebaseStorageURL: downloadURL.absoluteString)
+                FirebaseRealtimeDatabaseManager.shared.updateUserInfoInFirebaseDatabase(uid: uid, updateField: .userProfilePhotoFirebaseStorageURL(downloadURL.absoluteString)) { _ in }
                 
                 completion(Constants.Alerts.Messages.successfulProfilePhotoUpload, downloadURL.absoluteString, true)
             }
@@ -108,7 +108,7 @@ class FirebaseStorageManager: FirebaseStorageService {
     ///     2. `Bool`: Indicating whether the photo was uploaded or not.
     ///
     /// - Parameters:
-    ///   - uid: The unique identifier of a user stored in Firebase.
+    ///   - user: An object of `LocalUser`.
     ///   - urlPath: Local storage URL of photo to be posted.
     ///   - description: A description of the post.
     ///   - completion: An escaping closure with two arguments.
@@ -121,7 +121,9 @@ class FirebaseStorageManager: FirebaseStorageService {
         
         var postMetadataDictionary: [String: Any] = ["contentType": "image/jpeg",
                                                      "postDescription": postDescription ?? "",
-                                                     "postTimeCreated": postTimeCreated]
+                                                     "postTimeCreated": postTimeCreated,
+                                                     "usersWhoLikedThisPost": [],
+                                                     "usersWhoBookmarkedThisPost": []]
         
         let userInfo: [String: String] = ["userName": user.firstName! + " " + (user.lastName ?? ""),
                                           "userProfilePhotoFirebaseStorageURL": user.profilePhotoFirebaseStorageURL ?? ""]

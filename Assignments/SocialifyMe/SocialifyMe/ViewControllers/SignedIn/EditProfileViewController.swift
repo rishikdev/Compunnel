@@ -35,9 +35,7 @@ class EditProfileViewController: UIViewController {
     @IBOutlet weak var textFieldCity: UITextField!
     @IBOutlet weak var textFieldState: UITextField!
     @IBOutlet weak var textFieldCountry: UITextField!
-        
-    var databaseRef: DatabaseReference?
-    var storageRef: StorageReference?
+    
     var editProfileVM: EditProfileViewModel?
     
     var dateOfBirth: Date?

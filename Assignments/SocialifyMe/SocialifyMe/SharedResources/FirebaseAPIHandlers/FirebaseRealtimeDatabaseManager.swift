@@ -21,7 +21,7 @@ import FirebaseDatabase
 ///     - ``fetchPostsMetadataFromFirebaseDatabase(completion:)``
 ///     - ``updateUserInfoInFirebaseDatabase(uid:userName:profilePhotoFirebaseStorageURL:)``
 ///
-class FirebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseService {
+class FirebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseManagerProtocol {
     var databaseRef: DatabaseReference!
     
     static let shared = FirebaseRealtimeDatabaseManager()
@@ -33,8 +33,6 @@ class FirebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseService {
     // MARK: - Create User Profile In Firebase Database
     /// Creates user's profile in **Firebase Realtime Database**.
     ///
-    /// - Creates a `UserModel` object and converts it to a dictionary.
-    /// - Calls FirebaseManager's `createUserProfileInFirebaseDatabase(uid, user)` function.
     /// - If the users sign up using **Email and Password**, their profile is created using the information obtained from the sign up page.
     /// - If the users sign up using **Google**, their profile is created using their`first name` and `last name` obtained from Google.
     /// - If the users sign up using **Facebook**, their profile is created using their`first name`, `middle name` and `last name` obtained from Facebook.
@@ -44,7 +42,7 @@ class FirebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseService {
     ///
     /// - Parameters:
     ///   - uid: The unique identifier of a user stored in Firebase.
-    ///   - user: A `dictionary` with user's informaition.
+    ///   - userDictionary: A `dictionary` with user's informaition.
     ///   - completion: An escaping closure with two arguments.
     ///
     func createUserProfileInFirebaseDatabase(uid: String, userDictionary: [String: Any], completion: @escaping (String, Bool) -> Void) {
@@ -56,7 +54,7 @@ class FirebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseService {
                 completion(Constants.Alerts.Messages.unsuccessfulProfileCreation, false)
             } else {
                 let userName = (userDictionary["firstName"] as! String) + " " + ((userDictionary["lastName"] ?? "") as! String)
-                self.updateUserInfoInFirebaseDatabase(uid: uid, userName: userName)
+                self.updateUserInfoInFirebaseDatabase(uid: uid, updateField: .userName(userName)) { _ in }
                 completion(Constants.Alerts.Messages.successfulProfileCreation, true)
             }
         }
@@ -83,11 +81,12 @@ class FirebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseService {
                 completion(Constants.Alerts.Messages.unsuccessfulProfileCreation, false)
             } else {
                 let userName = (userDictionary["firstName"] as! String) + " " + ((userDictionary["lastName"] ?? "") as! String)
-                self.updateUserInfoInFirebaseDatabase(uid: uid, userName: userName)
+                self.updateUserInfoInFirebaseDatabase(uid: uid, updateField: .userName(userName)) { _ in }
                 completion(Constants.Alerts.Messages.successfulProfileUpdation, true)
             }
         }
     }
+    
     // TODO: Perform error handling
     // MARK: - Fetch User Profile From Firebase Database
     /// Fetches user's profile from Firebase **Realtime Database**.
@@ -130,14 +129,14 @@ class FirebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseService {
         let postUserInfoRef = self.databaseRef.child("data").child("posts").child(uid).child("userInfo")
         let postMetadataRef = self.databaseRef.child("data").child("posts").child(uid).childByAutoId()
         
-        postUserInfoRef.setValue(userInfo)
+        postUserInfoRef.child("userName").setValue(userInfo["userName"])
+        postUserInfoRef.child("userProfilePhotoFirebaseStorageURL").setValue(userInfo["userProfilePhotoFirebaseStorageURL"])
         
         postMetadataRef.setValue(postMetadata) { (error:Error?, ref:DatabaseReference) in
             if let error = error {
                 print("Post could not be uploaded: \(error)")
                 completion(nil, false)
             } else {
-                print("Post saved successfully!")
                 completion(postMetadataRef.key, true)
             }
         }
@@ -163,7 +162,6 @@ class FirebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseService {
                 print("Post could not be uploaded: \(error)")
                 completion(false)
             } else {
-                print("Post updated successfully!")
                 completion(true)
             }
         }
@@ -188,16 +186,19 @@ class FirebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseService {
             var postModelArray: [PostModel] = []
             
             if let postsMetadata = snapshot?.value as? [String: NSDictionary] {
-                for posts in postsMetadata.values {
+                for (userUID, posts) in postsMetadata {
                     let userInfo = posts["userInfo"] as? NSDictionary
-                    for post in posts.allValues {
+                    for (postID, post) in posts {
                         if let postDictionary = post as? NSDictionary {
                             /// This `if` condition is used to differentiate `post` object from `userInfo` object.
                             /// `post` object does not have `timeCreated` and `postPhotoStorageURL` fields, therefore, they will be `nil`.
-                            if(postDictionary["postTimeCreated"] != nil && postDictionary["postPhotoStorageURL"] != nil)
-                            {
-                                let postModel = PostModel(userProfilePhotoFirebaseStorageURL: userInfo?["userProfilePhotoFirebaseStorageURL"] as? String,
+                            if(postDictionary["postTimeCreated"] != nil && postDictionary["postPhotoStorageURL"] != nil) {
+                                let postModel = PostModel(userUID: userUID,
+                                                          userProfilePhotoFirebaseStorageURL: userInfo?["userProfilePhotoFirebaseStorageURL"] as? String,
                                                           userName: userInfo?["userName"] as? String,
+                                                          usersWhoLikedThisPost: postDictionary["usersWhoLikedThisPost"] as? [String] ?? [],
+                                                          usersWhoBookmarkedThisPost: postDictionary["usersWhoBookmarkedThisPost"] as? [String] ?? [],
+                                                          postID: postID as? String,
                                                           postPhotoStorageURL: postDictionary["postPhotoStorageURL"] as? String,
                                                           postTimeCreated: postDictionary["postTimeCreated"] as? String,
                                                           postDescription: postDictionary["postDescription"] as? String)
@@ -238,6 +239,7 @@ class FirebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseService {
                     if(post["postTimeCreated"] != nil && post["postPhotoStorageURL"] != nil) {
                         let postModel = PostModel(userProfilePhotoFirebaseStorageURL: userInfo?["userProfilePhotoFirebaseStorageURL"] as? String,
                                                   userName: userInfo?["userName"] as? String,
+                                                  usersWhoLikedThisPost: post["usersWhoLikedThisPost"] as? [String] ?? [],
                                                   postPhotoStorageURL: post["postPhotoStorageURL"] as? String,
                                                   postTimeCreated: post["postTimeCreated"] as? String,
                                                   postDescription: post["postDescription"] as? String)
@@ -252,22 +254,63 @@ class FirebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseService {
     // MARK: - Update UserInfo In Firebase Database
     /// Updates `userInfo` in **Firebase Database**.
     ///
+    /// - Used to update `UserInfo` key's values in `posts` field present in **Firebase Database**.
     /// - If the `userInfo` field is not present in **Firebase Database**, this function creates it.
+    /// - The parameter `completion` has one argument:
+    ///     1. `Bool`: Indicating whether the `userInfo` was updated or not.
     ///
     /// - Parameters:
     ///   - uid: The unique identifier of a user stored in **Firebase**.
-    ///   - userName: The name of the user.
-    ///   - profilePhotoFirebaseStorageURL: The `URL` of the user's profile photo stored in **Firebase Storage**.
+    ///   - updateField: Enum case of ``UpdateUserInfo``.
+    ///   - completion: An escaping closure with one argument
     ///
-    func updateUserInfoInFirebaseDatabase(uid: String, userName: String? = nil, profilePhotoFirebaseStorageURL: String? = nil) {
+    func updateUserInfoInFirebaseDatabase(uid: String, updateField: UpdateUserInfo, completion: @escaping (Bool) -> Void) {
         let userInfoPostRef = self.databaseRef.child("data").child("posts").child(uid).child("userInfo")
         
-        if(userName == nil) {
-            userInfoPostRef.child("userProfilePhotoFirebaseStorageURL").setValue(profilePhotoFirebaseStorageURL)
-        }
-        
-        if(profilePhotoFirebaseStorageURL == nil) {
+        switch(updateField) {
+            case .userName(let userName):
             userInfoPostRef.child("userName").setValue(userName)
+                
+            case .userProfilePhotoFirebaseStorageURL(let profilePhotoFirebaseStorageURL):
+            userInfoPostRef.child("userProfilePhotoFirebaseStorageURL").setValue(profilePhotoFirebaseStorageURL)
+                
+            case .likedPostID(let post, let isPostLiked):
+            let postMetadata = HelperFunctions.shared.postModelToPostDictionary(post: post)
+            
+            if(isPostLiked) {
+                var likedPostDictionary: [String: String] = [:]
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+                
+                likedPostDictionary["postOwner"] = post.userUID
+                likedPostDictionary["timeLiked"] = dateFormatter.string(from: Date())
+                userInfoPostRef.child("likedPosts/\(post.postID!)").setValue(likedPostDictionary)
+            } else {
+                userInfoPostRef.child("likedPosts/\(post.postID!)").setValue(nil)
+            }
+            
+            self.updatePostMetadataInFirebaseDatabase(uidUser: post.userUID!, primaryKeyPost: post.postID!, postMetadata: postMetadata) { _ in
+                completion(true)
+            }
+                
+            case .bookmarkedPostID(let post, let isPostBookmarked):
+            let postMetadata = HelperFunctions.shared.postModelToPostDictionary(post: post)
+            
+            if(isPostBookmarked) {
+                var bookmarkedPostDictionary: [String: String] = [:]
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+                
+                bookmarkedPostDictionary["postOwner"] = post.userUID
+                bookmarkedPostDictionary["timeBookmarked"] = dateFormatter.string(from: Date())
+                userInfoPostRef.child("bookmarkedPosts/\(post.postID!)").setValue(bookmarkedPostDictionary)
+            } else {
+                userInfoPostRef.child("bookmarkedPosts/\(post.postID!)").setValue(nil)
+            }
+            
+            self.updatePostMetadataInFirebaseDatabase(uidUser: post.userUID!, primaryKeyPost: post.postID!, postMetadata: postMetadata) { _ in
+                completion(true)
+            }
         }
     }
 }

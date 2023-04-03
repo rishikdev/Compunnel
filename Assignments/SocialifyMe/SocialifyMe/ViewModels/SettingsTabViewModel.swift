@@ -12,16 +12,27 @@ import Foundation
 /// - Handles functionalities related to signing out users.
 ///
 /// - Properties:
+///     - ``firebaseAuthenticationManager``
+///     - ``firebaseRealtimeDatabaseManager``
+///     - ``coreDataManager``
 ///     - ``posts``
 ///
 /// - Functions:
-///     - ``fetchPostsMetadataFromFirebaseDatabaseFor(uid:completion:))``
-///     - ``signOut(completion:)``
+///     - ``fetchPostsMetadataFromFirebaseDatabaseFor(uid:completion:)``
+///     - ``signOut(provider:completion:)``
 ///     - ``deleteAllLocalUsers(entity:)``
 ///
 class SettingsTabViewModel {
-    
+    var firebaseAuthenticationManager: FirebaseAuthenticationManagerProtocol
+    var firebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseManagerProtocol
+    var coreDataManager: CoreDataManagerProtocol
     var posts: [PostModel] = []
+    
+    init(firebaseAuthenticationManager: FirebaseAuthenticationManagerProtocol, firebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseManagerProtocol, coreDataManager: CoreDataManagerProtocol) {
+        self.firebaseAuthenticationManager = firebaseAuthenticationManager
+        self.firebaseRealtimeDatabaseManager = firebaseRealtimeDatabaseManager
+        self.coreDataManager = coreDataManager
+    }
     
     // MARK: - Fetch Posts From Firebase Database
     /// Fetches post metadata from **Firebase Database** for the provided `uid`.
@@ -35,17 +46,18 @@ class SettingsTabViewModel {
     ///   - completion: An escaping closure with two parameters.
     ///
     func fetchPostsMetadataFromFirebaseDatabaseFor(uid: String, completion: @escaping(String, Bool) -> Void) {
-        FirebaseRealtimeDatabaseManager.shared.fetchPostsMetadataFromFirebaseDatabaseFor(uid: uid) { result in
+        firebaseRealtimeDatabaseManager.fetchPostsMetadataFromFirebaseDatabaseFor(uid: uid) { result in
             switch(result) {
             case .success(let posts):
                 self.posts = posts
                 self.posts.sort { p1, p2 in
                     let dateFormatter = DateFormatter()
-                    dateFormatter.dateFormat = "dd/MM/yyyy HH:mm"
+                    dateFormatter.dateFormat = "dd/MM/yyyy HH:mm:ss:sssz"
                     dateFormatter.timeZone = .gmt
                     let date1 = dateFormatter.date(from: p1.postTimeCreated!)
+                    let date2 = dateFormatter.date(from: p2.postTimeCreated!)
                     
-                    return (date1 ?? Date()) > (dateFormatter.date(from: p2.postTimeCreated!) ?? Date())
+                    return (date1 ?? Date()) > (date2 ?? Date())
                 }
                 completion(Constants.Alerts.Messages.successfulPostFetch, true)
                 
@@ -59,7 +71,7 @@ class SettingsTabViewModel {
     // MARK: - Sign Out
     /// Signs users out.
     ///
-    /// - Calls ``FirebaseManager/signOut(completion:)` funciton.
+    /// - Calls ``FirebaseAuthenticationManager/signOut(provider:completion:)`` function.
     /// - The parameter `completion` has two arguments:
     ///     1. `String`: If the user was successfully signed out, this argument contains a success message. Otherwise, it contains the reason why the sign out process failed.
     ///     2. `Bool`: Indicating whether the user was signed out or not.
@@ -67,7 +79,7 @@ class SettingsTabViewModel {
     /// - Parameter completion: An escaping closure with two arguments
     ///
     func signOut(provider: String, completion: @escaping (String, Bool) -> Void) {
-        FirebaseAuthenticationManager.shared.signOut(provider: provider) { message, isSignedOut in completion(message, isSignedOut) }
+        firebaseAuthenticationManager.signOut(provider: provider) { message, isSignedOut in completion(message, isSignedOut) }
     }
     
     // MARK: - Delete All Local Users
@@ -78,6 +90,6 @@ class SettingsTabViewModel {
     /// - Parameter entity: Name of the entity the objects of which need to be deleted
     ///
     func deleteAllLocalUsers(entity: String) {
-        CoreDataManager.shared.deleteAllLocalUsers(entity: entity)
+        coreDataManager.deleteAllLocalUsers(entity: entity)
     }
 }

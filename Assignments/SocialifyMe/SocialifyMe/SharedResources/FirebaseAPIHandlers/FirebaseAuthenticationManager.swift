@@ -23,7 +23,7 @@ import FacebookLogin
 ///     - ``signInWithFacebook(viewController:completion:)``
 ///     - ``signOut(completion:)``
 ///
-class FirebaseAuthenticationManager: FirebaseAuthenticationService {
+class FirebaseAuthenticationManager: FirebaseAuthenticationManagerProtocol {
     var facebookLoginManager: LoginManager!
     
     static let shared = FirebaseAuthenticationManager()

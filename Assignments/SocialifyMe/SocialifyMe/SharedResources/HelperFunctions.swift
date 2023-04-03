@@ -38,7 +38,7 @@ class HelperFunctions {
     }
     
     func localDateTimeToGMT() -> String {
-        dateFormatter.dateFormat = "dd/MM/yyyy HH:mm"
+        dateFormatter.dateFormat = "dd/MM/yyyy HH:mm:ss:sssz"
         dateFormatter.locale = Locale(identifier: "en")
         dateFormatter.timeZone = .gmt
         
@@ -46,7 +46,7 @@ class HelperFunctions {
     }
     
     func GMTDateTimeToLocal(dateString: String) -> String? {
-        dateFormatter.dateFormat = "dd/MM/yyyy HH:mm"
+        dateFormatter.dateFormat = "dd/MM/yyyy HH:mm:ss:sssz"
         dateFormatter.locale = .autoupdatingCurrent
         dateFormatter.timeZone = .gmt
         
@@ -56,5 +56,18 @@ class HelperFunctions {
         dateFormatter.timeZone = .autoupdatingCurrent
         
         return dateFormatter.string(from: date ?? Date())
+    }
+    
+    func postModelToPostDictionary(post: PostModel) -> [String: Any] {
+        var postDictionary: [String: Any] = [:]
+        
+        postDictionary["contentType"] = "image/jpeg"
+        postDictionary["postPhotoStorageURL"] = post.postPhotoStorageURL
+        postDictionary["postTimeCreated"] = post.postTimeCreated
+        postDictionary["postDescription"] = post.postDescription
+        postDictionary["usersWhoLikedThisPost"] = post.usersWhoLikedThisPost
+        postDictionary["usersWhoBookmarkedThisPost"] = post.usersWhoBookmarkedThisPost
+        
+        return postDictionary
     }
 }

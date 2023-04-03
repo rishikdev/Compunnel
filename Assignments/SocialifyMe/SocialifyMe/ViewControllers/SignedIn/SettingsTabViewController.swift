@@ -25,8 +25,6 @@ class SettingsTabViewController: UIViewController {
     @IBOutlet weak var labelPostFetchInfo: UILabel!
     @IBOutlet weak var collectionViewUserPosts: UICollectionView!
     
-    var databaseRef: DatabaseReference!
-    var storageRef: StorageReference!
     var settingsTabVM: SettingsTabViewModel!
     
     override func viewDidLoad() {

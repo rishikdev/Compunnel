@@ -24,9 +24,6 @@ class OnboardingViewController: UIViewController {
     @IBOutlet weak var buttonSignInWithFacebook: UIButton!
     @IBOutlet weak var viewLogoBackground: UIView!
     
-    var facebookLoginManager: LoginManager!
-    var databaseRef: DatabaseReference!
-    var storageRef: StorageReference!
     var onboardingVM: OnboardingViewModel?
     
     override func viewDidLoad() {

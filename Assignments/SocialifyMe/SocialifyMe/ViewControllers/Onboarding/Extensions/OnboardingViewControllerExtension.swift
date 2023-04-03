@@ -14,11 +14,14 @@ import FacebookLogin
 import GoogleSignIn
 
 extension OnboardingViewController {
-    
     func initialConfiguration() {
         title = Constants.VCTitles.onboardingVCTitle
         
-        self.onboardingVM = OnboardingViewModel()
+        self.onboardingVM = OnboardingViewModel(firebaseAuthenticationManager: FirebaseAuthenticationManager.shared,
+                                                firebaseStorageManager: FirebaseStorageManager.shared,
+                                                firebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseManager.shared,
+                                                coreDataManager: CoreDataManager.shared)
+        
         populateLabelsAndTextFieldPlaceholders()
                 
         configureButton(button: buttonSignIn, buttonTitle: Constants.Buttons.signIn, buttonColour: .systemGreen)
@@ -96,7 +99,6 @@ extension OnboardingViewController {
     func detailedSignUp(localUser: LocalUser? = nil) {
         guard let signUpVC = storyboard?.instantiateViewController(withIdentifier: "SignUpViewController") as? SignUpViewController else { return }
         
-        signUpVC.databaseRef = databaseRef
         signUpVC.sharedLocalUser = localUser
         signUpVC.email = textFieldEmail.text
         signUpVC.password = textFieldPassword.text
@@ -114,8 +116,6 @@ extension OnboardingViewController {
             let activityIndicator = addActivityIndicator()
             
             guard let signedInTabBarController = UIStoryboard(name: "SignedIn", bundle: nil).instantiateViewController(withIdentifier: "SignedInTabBarController") as? SignedInTabBarController else { return }
-            signedInTabBarController.databaseRef = databaseRef
-            signedInTabBarController.storageRef = storageRef
             
             onboardingVM?.signInWithEmailPassword(email: email, password: password) { [weak self] message, isSignInSuccessful in
                 self?.removeActivityIndicator(activityIndicator: activityIndicator)
@@ -147,13 +147,11 @@ extension OnboardingViewController {
     func signInWithGoogle() {
         let activityIndicator = addActivityIndicator()
         
-        onboardingVM?.signInWithGoogle(currentVewController: self) { [weak self] message, isSignInSuccessful, isNewUser in
+        onboardingVM?.signInWithGoogle(currentViewController: self) { [weak self] message, isSignInSuccessful, isNewUser in
             self?.removeActivityIndicator(activityIndicator: activityIndicator)
             
             if(isSignInSuccessful) {
                 guard let signedInTabBarController = UIStoryboard(name: "SignedIn", bundle: nil).instantiateViewController(withIdentifier: "SignedInTabBarController") as? SignedInTabBarController else { return }
-                signedInTabBarController.databaseRef = self?.databaseRef
-                signedInTabBarController.storageRef = self?.storageRef
                 
                 let localUser = SharedUser.shared.localUser
                 
@@ -201,8 +199,6 @@ extension OnboardingViewController {
             
             if(isSignInSuccessful) {
                 guard let signedInTabBarController = UIStoryboard(name: "SignedIn", bundle: nil).instantiateViewController(withIdentifier: "SignedInTabBarController") as? SignedInTabBarController else { return }
-                signedInTabBarController.databaseRef = self?.databaseRef
-                signedInTabBarController.storageRef = self?.storageRef
                 
                 let sharedUser = SharedUser.shared.localUser
                 

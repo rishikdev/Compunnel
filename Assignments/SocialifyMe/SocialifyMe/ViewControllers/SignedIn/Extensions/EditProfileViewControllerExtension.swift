@@ -18,7 +18,10 @@ extension EditProfileViewController: UIImagePickerControllerDelegate, UINavigati
         populateTextFields()
         
         self.isNewProfilePhotoSelected = false
-        self.editProfileVM = EditProfileViewModel()
+        self.editProfileVM = EditProfileViewModel(firebaseAuthenticationManager: FirebaseAuthenticationManager.shared,
+                                                  firebaseStorageManager: FirebaseStorageManager.shared,
+                                                  firebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseManager.shared,
+                                                  coreDataManager: CoreDataManager.shared)
     }
     
     func populateLabelsAndTextFieldPlaceholders() {
@@ -220,13 +223,13 @@ extension EditProfileViewController: UIImagePickerControllerDelegate, UINavigati
         if self.isNewProfilePhotoSelected,
            let profilePhotoURLPath = self.profilePhotoURLPath,
            let uid = sharedLocalUser.uid {
-            self.editProfileVM?.uploadProfilePhoto(uid: uid, from: profilePhotoURLPath) { [weak self] uploadProfilePhotoMessage, downloadURL, isProfilePhotoUploaded in
+            self.editProfileVM?.uploadProfilePhotoToFirebaseStorage(uid: uid, from: profilePhotoURLPath) { [weak self] uploadProfilePhotoMessage, downloadURL, isProfilePhotoUploaded in
                 if(isProfilePhotoUploaded) {
                     userModel.profilePhotoFirebaseStorageURL = downloadURL
                     self?.editProfileVM?.updateUserProfileInFirebaseDatabase(userModel: userModel) { [weak self] updateProfileMessage, isProfileUpdated, updatedUserModel in
                         if(isProfileUpdated) {
                             /// Profile was successfully updated
-                            self?.editProfileVM?.downloadProfilePhoto(uid: uid) { [weak self] downloadedProfilePhotoURL, isProfilePhotoDownloaded in
+                            self?.editProfileVM?.downloadProfilePhotoFromFirebaseStorage(uid: uid) { [weak self] downloadedProfilePhotoURL, isProfilePhotoDownloaded in
                                 if(isProfilePhotoDownloaded) {
                                     /// Profile photo was successfully uploaded and downloaded to local storage
                                     self?.editProfileVM?.updateUserProfileInLocalStorage(localUser: sharedLocalUser, updatedUserModel: updatedUserModel, profilePhotoURL: downloadedProfilePhotoURL)

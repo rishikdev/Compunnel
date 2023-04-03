@@ -14,7 +14,8 @@ extension HomeTabViewController: UIImagePickerControllerDelegate, UINavigationCo
     
     func initialConfiguration() {
         self.navigationItem.title =  Constants.VCTitles.homeTabVCTitle
-        self.homeTabVM = HomeTabViewModel()
+        self.homeTabVM = HomeTabViewModel(firebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseManager.shared,
+                                          signedInUserUID: (SharedUser.shared.localUser?.uid)!)
         
         self.labelNoContent.text = Constants.LabelTexts.noContent
         self.labelNoContent.isHidden = true
@@ -28,15 +29,13 @@ extension HomeTabViewController: UIImagePickerControllerDelegate, UINavigationCo
     
     @objc private func uploadPostButtonHandler() {
         guard let createPostVC = storyboard?.instantiateViewController(withIdentifier: "CreatePostViewController") as? CreatePostViewController else { return }
-        
         createPostVC.delegate = self
-        
         navigationController?.present(createPostVC, animated: true)
     }
     
     func fetchPosts() {
         let activityIndicator = self.addActivityIndicator()
-        self.homeTabVM.fetchPostsMetadata() { [weak self] fetchPostMessage, arePostsFetched in
+        self.homeTabVM.fetchPostsMetadataFromFirebaseRealtimeDatabase() { [weak self] fetchPostMessage, arePostsFetched in
             self?.removeActivityIndicator(activityIndicator: activityIndicator)
             if(arePostsFetched) {
                 /// There is at least one post in the database.
@@ -76,17 +75,16 @@ extension HomeTabViewController: UIImagePickerControllerDelegate, UINavigationCo
         stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
         stackView.leftAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leftAnchor),
         stackView.rightAnchor.constraint(equalTo: scrollView.contentLayoutGuide.rightAnchor),
-        stackView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor)
+        stackView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+        stackView.heightAnchor.constraint(greaterThanOrEqualToConstant: 475)
         ])
         
         for post in self.homeTabVM.posts {
             let postView = PostView()
             
-            if(post.userProfilePhotoFirebaseStorageURL!.isEmpty) {
-                postView.imageViewProfilePhoto.load(Constants.DefaultURLs.noProfilePhoto)
-            } else {
-                postView.imageViewProfilePhoto.load(post.userProfilePhotoFirebaseStorageURL!)
-            }
+            postView.postID = post.postID
+            
+            postView.imageViewProfilePhoto.load((post.userProfilePhotoFirebaseStorageURL == "" ? Constants.DefaultURLs.noProfilePhoto : post.userProfilePhotoFirebaseStorageURL) ?? Constants.DefaultURLs.noProfilePhoto)
             postView.imageViewProfilePhoto.roundImage()
             
             postView.labelUserName.text = post.userName
@@ -104,7 +102,33 @@ extension HomeTabViewController: UIImagePickerControllerDelegate, UINavigationCo
             
             stackView.addArrangedSubview(postView)
             postView.widthAnchor.constraint(equalTo: stackView.widthAnchor).isActive = true
-            postView.heightAnchor.constraint(greaterThanOrEqualToConstant: 525).isActive = true
+            postView.heightAnchor.constraint(greaterThanOrEqualToConstant: 475).isActive = true
+            
+            if(post.usersWhoLikedThisPost.contains((SharedUser.shared.localUser?.uid)!)) {
+                postView.isPostLiked = true
+                postView.buttonLikePost.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+            }
+            
+            if(post.usersWhoBookmarkedThisPost.contains((SharedUser.shared.localUser?.uid)!)) {
+                postView.isPostBookmarked = true
+                postView.buttonBookmarkPost.setImage(UIImage(systemName: "bookmark.fill"), for: .normal)
+            }
+            
+            postView.likePostCompletion = { [weak self] postID, isPostLiked in
+                self?.homeTabVM.addLikedPostToUserInfoInFirebaseRealtimeDatabase(reactedPostID: post.postID!, isPostLiked: isPostLiked) { [weak self] postUpdationMessage, isPostUpdated in
+                    if(!isPostUpdated) {
+                        self?.presentAlert(title: Constants.Alerts.Titles.unsuccessful, message: postUpdationMessage)
+                    }
+                }
+            }
+            
+            postView.bookmarkPostCompletion = { [weak self] postID, isPostBookmarked in
+                self?.homeTabVM.addBookmarkedPostToUserInfoInFirebaseRealtimeDatabase(reactedPostID: post.postID!, isPostBookmarked: isPostBookmarked) { postUpdationMessage, isPostUpdated in
+                    if(!isPostUpdated) {
+                        self?.presentAlert(title: Constants.Alerts.Titles.unsuccessful, message: postUpdationMessage)
+                    }
+                }
+            }
         }
     }
     

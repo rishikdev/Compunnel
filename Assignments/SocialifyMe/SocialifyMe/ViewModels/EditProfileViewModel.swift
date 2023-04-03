@@ -12,11 +12,17 @@ import FirebaseAuth
 ///
 /// - Handles functionalities related to **creating user profiles**.
 ///
+/// - Properties:
+///     - ``firebaseAuthenticationManager``
+///     - ``firebaseStorageManager``
+///     - ``firebaseRealtimeDatabaseManager``
+///     - ``coreDataManager``
+///
 /// - Functions:
 ///     - ``createUserProfileInFirebaseDatabase(userModel:completion:)``
 ///     - ``updateUserProfileInFirebaseDatabase(userModel:completion:)``
-///     - ``uploadProfilePhoto(uid:from:completion:)``
-///     - ``downloadProfilePhoto(uid:completion:)``
+///     - ``uploadProfilePhotoToFirebaseStorage(uid:from:completion:)``
+///     - ``downloadProfilePhotoFromFirebaseStorage(uid:completion:)``
 ///     - ``createAccount(email:password:completion:)``
 ///     - ``fetchUserProfilesFromLocalStorage()``
 ///     - ``createUserProfileInLocalStorage(userModel:profilePhotoURL:)``
@@ -24,13 +30,25 @@ import FirebaseAuth
 ///
 class EditProfileViewModel {
     
+    var firebaseAuthenticationManager: FirebaseAuthenticationManagerProtocol
+    var firebaseStorageManager: FirebaseStorageManagerProtocol
+    var firebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseManagerProtocol
+    var coreDataManager: CoreDataManagerProtocol
+    
+    init(firebaseAuthenticationManager: FirebaseAuthenticationManagerProtocol, firebaseStorageManager: FirebaseStorageManagerProtocol, firebaseRealtimeDatabaseManager: FirebaseRealtimeDatabaseManagerProtocol, coreDataManager: CoreDataManagerProtocol) {
+        self.firebaseAuthenticationManager = firebaseAuthenticationManager
+        self.firebaseStorageManager = firebaseStorageManager
+        self.firebaseRealtimeDatabaseManager = firebaseRealtimeDatabaseManager
+        self.coreDataManager = coreDataManager
+    }
+    
     // MARK: - Firebase Realtime Database Functions
     
     // MARK: Create User Profile In Firebase Database
     /// Creates user's profile in Firebase Realtime Database
     ///
     /// - Creates a ``UserModel`` object and converts it to a dictionary.
-    /// - Calls ``FirebaseManager/createUserProfileInFirebaseDatabase(uid:userDictionary:completion:)`` function.
+    /// - Calls ``FirebaseRealtimeDatabaseManager/createUserProfileInFirebaseDatabase(uid:userDictionary:completion:)`` function.
     /// - If the users sign up using **Email and Password**, their profile is created using the information obtained from the sign up page.
     /// - If the users sign up using **Google**, their profile is created using their`first name` and `last name` obtained from Google.
     /// - If the users sign up using **Facebook**, their profile is created using their`first name`, `middle name` and `last name` obtained from Facebook.
@@ -44,14 +62,14 @@ class EditProfileViewModel {
     ///
     func createUserProfileInFirebaseDatabase(userModel: UserModel, completion: @escaping (String, Bool) -> Void) {
         let userDictionary = HelperFunctions.shared.getUserDictionary(userModel: userModel)
-        FirebaseRealtimeDatabaseManager.shared.createUserProfileInFirebaseDatabase(uid: userModel.uid, userDictionary: userDictionary) { message, isProfileCreated in completion(message, isProfileCreated) }
+        firebaseRealtimeDatabaseManager.createUserProfileInFirebaseDatabase(uid: userModel.uid, userDictionary: userDictionary) { message, isProfileCreated in completion(message, isProfileCreated) }
     }
     
     // MARK: Update User Profile In Firebase Database
     /// Updates user's profile in Firebase Realtime Database
     ///
     /// - Creates a ``UserModel`` object and converts it into a dictionary.
-    /// - Calls ``FirebaseManager/updateUserProfileInFirebaseDatabase(uid:userDictionary:completion:)`` function.
+    /// - Calls ``FirebaseRealtimeDatabaseManager/updateUserProfileInFirebaseDatabase(uid:userDictionary:completion:)`` function.
     /// - The parameter `completion` has three arguments:
     ///     1. `String`: If the profile was successfully updated in **Firebase**, this argument contains a success message. Otherwise, it contains the reason why the profile updation failed.
     ///     2. `Bool`: Indicating whether the profile was updated or not.
@@ -63,32 +81,33 @@ class EditProfileViewModel {
     ///
     func updateUserProfileInFirebaseDatabase(userModel: UserModel, completion: @escaping (String, Bool, UserModel) -> Void) {
         let userDictionary = HelperFunctions.shared.getUserDictionary(userModel: userModel)
-        FirebaseRealtimeDatabaseManager.shared.updateUserProfileInFirebaseDatabase(uid: userModel.uid, userDictionary: userDictionary) { message, isProfileCreated in completion(message, isProfileCreated, userModel) }
+        firebaseRealtimeDatabaseManager.updateUserProfileInFirebaseDatabase(uid: userModel.uid, userDictionary: userDictionary) { message, isProfileCreated in completion(message, isProfileCreated, userModel) }
     }
     
     // MARK: - Firebase Storage Funcions
 
-    //MARK: Upload Profile Photo
+    //MARK: Upload Profile Photo to Firebase Storage
     /// Uploads user's profile photo to Firebase Storage.
     ///
-    /// - Calls ``FirebaseManager/uploadProfilePhotoToFirebaseStorage(uid:from:completion:)`` function.
-    /// - The parameter `completion` has two arguments:
+    /// - Calls ``FirebaseStorageManager/uploadProfilePhotoToFirebaseStorage(uid:from:completion:)`` function.
+    /// - The parameter `completion` has three arguments:
     ///     1. `String`: If the upload was successful, this argument contains a success message. Otherwise, it contains the reason why the upload failed.
-    ///     2. `Bool`: Indicating whether the profile photo was uploaded or not.
+    ///     2. `String`: If the upload was successful, this argument contains the download URL of the photo, Otherwise, it is nil.
+    ///     3. `Bool`: Indicating whether the profile photo was uploaded or not.
     ///
     /// - Parameters:
     ///   - uid: The unique identifier of a user stored in Firebase.
     ///   - urlPath: Local storage URL of profile photo.
-    ///   - completion: An escaping closure with two arguments.
+    ///   - completion: An escaping closure with three arguments.
     ///
-    func uploadProfilePhoto(uid: String, from urlPath: URL, completion: @escaping (String, String?, Bool) -> Void) {
-        FirebaseStorageManager.shared.uploadProfilePhotoToFirebaseStorage(uid: uid, from: urlPath) { message, downloadURL, isProfilePhotoUploaded in completion (message, downloadURL, isProfilePhotoUploaded)}
+    func uploadProfilePhotoToFirebaseStorage(uid: String, from urlPath: URL, completion: @escaping (String, String?, Bool) -> Void) {
+        firebaseStorageManager.uploadProfilePhotoToFirebaseStorage(uid: uid, from: urlPath) { message, downloadURL, isProfilePhotoUploaded in completion (message, downloadURL, isProfilePhotoUploaded)}
     }
     
-    // MARK: Download Profile Photo
+    // MARK: Download Profile Photo From Firebase Storage
     /// Downloads user's profile photo from Firebase Storage to local storage.
     ///
-    /// - Calls ``FirebaseManager/downloadProfilePhotoFromFirebaseStorage(uid:completion:)`` function.
+    /// - Calls ``FirebaseStorageManager/downloadProfilePhotoFromFirebaseStorage(uid:completion:)`` function.
     /// - The parameter `completion` has two arguments:
     ///     1. `URL?`: If the profile photo was downloaded successfully, this argument contains the path of the downloaded profile photo. Otherwise, it is nil.
     ///     2. `Bool`: Indicating whether the profile photo was downloaded or not.
@@ -97,8 +116,8 @@ class EditProfileViewModel {
     ///   - uid: The unique identifier of a user stored in Firebase.
     ///   - completion: An escaping closure with two arguments.
     ///
-    func downloadProfilePhoto(uid: String, completion: @escaping (URL?, Bool) -> Void) {
-        FirebaseStorageManager.shared.downloadProfilePhotoFromFirebaseStorage(uid: uid) { downloadedProfilePhotoURL, isProfileDownloaded in completion(downloadedProfilePhotoURL, isProfileDownloaded) }
+    func downloadProfilePhotoFromFirebaseStorage(uid: String, completion: @escaping (URL?, Bool) -> Void) {
+        firebaseStorageManager.downloadProfilePhotoFromFirebaseStorage(uid: uid) { downloadedProfilePhotoURL, isProfileDownloaded in completion(downloadedProfilePhotoURL, isProfileDownloaded) }
     }
     
     // MARK: - Firebase Authentication Functions
@@ -106,7 +125,7 @@ class EditProfileViewModel {
     // MARK: Create Account
     /// Creates user's account on `Firebase`
     ///
-    /// - Calls ``FirebaseManager/createAccount(email:password:completion:)`` function.
+    /// - Calls ``FirebaseAuthenticationManager/createAccount(email:password:completion:)`` function.
     /// - The parameter `completion` has three arguments:
     ///     1. `String`: If the account creation was successful, this argument contains a success message. Otherwise, it contains the reason why the account creation failed.
     ///     2. `Bool`: A Boolean value indicating whether the authentication was successful or not.
@@ -118,7 +137,7 @@ class EditProfileViewModel {
     ///   - completion: An escaping closure with three arguments.
     ///
     func createAccount(email: String, password: String, completion: @escaping (String, Bool, User?) -> Void) {
-        FirebaseAuthenticationManager.shared.createAccount(email: email, password: password) { message, isAccountCreated, user in completion(message, isAccountCreated, user) }
+        firebaseAuthenticationManager.createAccount(email: email, password: password) { message, isAccountCreated, user in completion(message, isAccountCreated, user) }
     }
     
     // MARK: - Core Data Functions
@@ -133,7 +152,7 @@ class EditProfileViewModel {
     /// - Note: There will be only one object of `LocalUser` in storage at any given time.
     ///
     func fetchUserProfilesFromLocalStorage() -> [LocalUser] {
-        CoreDataManager.shared.fetchLocalUsers()
+        coreDataManager.fetchLocalUsers()
     }
     
     // MARK: Create User Profile In Local Storage
@@ -151,12 +170,12 @@ class EditProfileViewModel {
     ///
     func createUserProfileInLocalStorage(userModel: UserModel, profilePhotoURL: URL?) {
         // Deleting the previous user's information
-        CoreDataManager.shared.deleteAllLocalUsers(entity: Constants.CoreData.entityLocalUser)
+        coreDataManager.deleteAllLocalUsers(entity: Constants.CoreData.entityLocalUser)
         
         // Adding a new user
-        CoreDataManager.shared.createUserProfileInLocalStorage(userModel: userModel, profilePhotoLocalStorageURL: profilePhotoURL)
+        coreDataManager.createUserProfileInLocalStorage(userModel: userModel, profilePhotoLocalStorageURL: profilePhotoURL)
         
-        SharedUser.shared.localUser = CoreDataManager.shared.fetchLocalUsers()[0]
+        SharedUser.shared.localUser = coreDataManager.fetchLocalUsers()[0]
     }
     
     // MARK: Update User Profile In Local Storage
@@ -173,8 +192,8 @@ class EditProfileViewModel {
     /// - Note: `profilePhotoURL` will be nil if the user does not have a profile photo.
     ///
     func updateUserProfileInLocalStorage(localUser: LocalUser, updatedUserModel: UserModel, profilePhotoURL: URL?) {
-        CoreDataManager.shared.updateUserProfileInLocalStorage(localUser: localUser, updatedUserModel: updatedUserModel, profilePhotoURL: profilePhotoURL)
+        coreDataManager.updateUserProfileInLocalStorage(localUser: localUser, updatedUserModel: updatedUserModel, profilePhotoURL: profilePhotoURL)
         
-        SharedUser.shared.localUser = CoreDataManager.shared.fetchLocalUsers()[0]
+        SharedUser.shared.localUser = coreDataManager.fetchLocalUsers()[0]
     }
 }

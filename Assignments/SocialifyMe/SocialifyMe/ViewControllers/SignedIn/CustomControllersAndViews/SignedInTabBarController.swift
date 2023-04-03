@@ -17,9 +17,7 @@ class SignedInTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
-        self.delegate = self
-        
+        // Do any additional setup after loading the view.        
         guard let tabBarItems = tabBar.items else { return }
         
         tabBarItems[0].title = Constants.TabBarTitles.homeTab
@@ -31,18 +29,5 @@ class SignedInTabBarController: UITabBarController {
 //            let homeVC = homeNavigationController.topViewController as! HomeTabViewController
 //            homeVC.sharedUser = sharedUser
 //        }
-    }
-}
-
-extension SignedInTabBarController: UITabBarControllerDelegate {
-    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        
-        if(tabBarController.selectedIndex == 3) {
-            guard let settingsNavigationVC = tabBarController.viewControllers?[3] as? UINavigationController else { return }
-            guard let settingsVC = settingsNavigationVC.topViewController as? SettingsTabViewController else { return }
-            
-            settingsVC.databaseRef = databaseRef
-            settingsVC.storageRef = storageRef
-        }
     }
 }

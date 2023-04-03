@@ -451,14 +451,14 @@
                                                 </collectionViewFlowLayout>
                                                 <cells>
                                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="postCell" id="ENQ-oe-G6Z" customClass="PostPhotoCollectionViewCell" customModule="SocialifyMe" customModuleProvider="target">
-                                                        <rect key="frame" x="0.0" y="0.0" width="160" height="160"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="150" height="150"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="oIm-xc-TFE">
-                                                            <rect key="frame" x="0.0" y="0.0" width="160" height="160"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="150" height="150"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                             <subviews>
                                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="G8R-zL-NU5">
-                                                                    <rect key="frame" x="5" y="5" width="150" height="150"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="150" height="150"/>
                                                                     <constraints>
                                                                         <constraint firstAttribute="width" constant="150" id="6NJ-fL-XP3"/>
                                                                         <constraint firstAttribute="height" constant="150" id="bZE-OO-hWM"/>
@@ -466,10 +466,10 @@
                                                                 </imageView>
                                                             </subviews>
                                                             <constraints>
-                                                                <constraint firstItem="G8R-zL-NU5" firstAttribute="leading" secondItem="oIm-xc-TFE" secondAttribute="leading" constant="5" id="SLT-mQ-2tz"/>
-                                                                <constraint firstAttribute="trailing" secondItem="G8R-zL-NU5" secondAttribute="trailing" constant="5" id="aFL-FC-3Eh"/>
-                                                                <constraint firstAttribute="bottom" secondItem="G8R-zL-NU5" secondAttribute="bottom" constant="5" id="jpp-vz-S8O"/>
-                                                                <constraint firstItem="G8R-zL-NU5" firstAttribute="top" secondItem="oIm-xc-TFE" secondAttribute="top" constant="5" id="ydJ-2m-RFi"/>
+                                                                <constraint firstItem="G8R-zL-NU5" firstAttribute="leading" secondItem="oIm-xc-TFE" secondAttribute="leading" id="SLT-mQ-2tz"/>
+                                                                <constraint firstAttribute="trailing" secondItem="G8R-zL-NU5" secondAttribute="trailing" id="aFL-FC-3Eh"/>
+                                                                <constraint firstAttribute="bottom" secondItem="G8R-zL-NU5" secondAttribute="bottom" id="jpp-vz-S8O"/>
+                                                                <constraint firstItem="G8R-zL-NU5" firstAttribute="top" secondItem="oIm-xc-TFE" secondAttribute="top" id="ydJ-2m-RFi"/>
                                                             </constraints>
                                                         </collectionViewCellContentView>
                                                         <connections>

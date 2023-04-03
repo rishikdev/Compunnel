@@ -20,7 +20,7 @@ import CoreData
 ///     - ``saveContext(context:)``
 ///     - ``getContext()``
 ///
-class CoreDataManager {
+class CoreDataManager: CoreDataManagerProtocol {
     static let shared = CoreDataManager()
     private init() {}
     
@@ -34,7 +34,7 @@ class CoreDataManager {
         return container
     }()
     
-    // MARK: Fetch User Profiles From Local Storage
+    // MARK: - Fetch User Profiles From Local Storage
     /// Fetches an array of LocalUsers
     ///
     /// - Returns: An array of `LocalUser` objects.
@@ -51,7 +51,7 @@ class CoreDataManager {
         }
     }
     
-    // MARK: Create User Profile In Local Storage
+    // MARK: - Create User Profile In Local Storage
     /// Persists user's information to local storage.
     ///
     /// - Parameters:
@@ -87,7 +87,7 @@ class CoreDataManager {
         saveContext(context: context)
     }
     
-    // MARK: Update User Profile In Local Storage
+    // MARK: - Update User Profile In Local Storage
     /// Updates and persists user's information to local storage.
     ///
     /// - Parameters:
@@ -133,7 +133,7 @@ class CoreDataManager {
         _ = try? persistentContainer.persistentStoreCoordinator.execute(deleteRequest, with: persistentContainer.viewContext)
     }
     
-    // MARK: Save Context
+    // MARK: - Save Context
     /// Saves context
     /// - Parameter context: `context` of type `NSManagedObjectContext`
     func saveContext (context: NSManagedObjectContext) {
@@ -146,7 +146,7 @@ class CoreDataManager {
         }
     }
     
-    // MARK: Get Context
+    // MARK: - Get Context
     /// Gets context
     /// - Returns: `ccontext` of type `NSManagedObjectContext`
     func getContext() -> NSManagedObjectContext {
